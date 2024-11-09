@@ -1,4 +1,4 @@
-﻿namespace Common
+﻿namespace Kurier.Common
 {
     public class Order
     {
