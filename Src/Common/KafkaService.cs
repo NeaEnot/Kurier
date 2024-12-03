@@ -41,7 +41,7 @@ namespace Kurier.Common
             { }
         }
 
-        public void SubscribeOnTopic<T>(string topic, Action<T> action, CancellationToken cancellationToken) where T : class
+        public void SubscribeOnTopic<T>(string topic, Action<T> action, CancellationToken cancellationToken)
         {
             _consumer.Subscribe(topic);
 
