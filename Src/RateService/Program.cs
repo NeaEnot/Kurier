@@ -5,24 +5,29 @@ namespace Kurier.RateService
     internal class Program
     {
         private static KafkaService kafkaService;
-        private static string topic;
+        private static string topicIn;
+        private static string topicOut;
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            topic = "example-topic";
+            topicIn = "example-topic-in";
+            topicOut = "example-topic-out";
             kafkaService = new KafkaService();
 
-            CancellationToken cancellationToken = new CancellationTokenSource().Token;
-            kafkaService.SubscribeOnTopic<decimal>(topic, weight =>
-            {
-                RateOrder(weight);
-            }, cancellationToken);
+            CancellationTokenSource cts = new CancellationTokenSource();
+            kafkaService.SubscribeOnTopic(topicIn, message => RateOrder(decimal.Parse(message)), cts.Token);
+
+            Console.WriteLine("Press Enter to exit...");
+            await Task.Run(() => Console.ReadLine());
+            cts.Cancel();
         }
 
-        static async void RateOrder(decimal weight)
+        static void RateOrder(decimal weight)
         {
             decimal price = Math.Round(weight * 3.125m, 2);
-            kafkaService.SendMessageAsync(topic, price.ToString());
+            Console.WriteLine($"Rated order with weight {weight} by price {price}");
+
+            kafkaService.SendMessageAsync(topicOut, price.ToString());
         }
     }
 }

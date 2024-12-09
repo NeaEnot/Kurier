@@ -41,22 +41,39 @@ namespace Kurier.Common
             { }
         }
 
-        public void SubscribeOnTopic<T>(string topic, Action<T> action, CancellationToken cancellationToken)
+        public void SubscribeOnTopic(string topic, Action<string> action, CancellationToken cancellationToken)
         {
             _consumer.Subscribe(topic);
 
-            while (!cancellationToken.IsCancellationRequested)
+            // Если оставить Task.Run, то работает сервис, но апи зависает без ответа
+            Task.Run(() =>
             {
                 try
                 {
-                    var result = _consumer.Consume(cancellationToken);
-                    var message = result.Message.Value;
+                    while (!cancellationToken.IsCancellationRequested)
+                    {
+                        try
+                        {
+                            var result = _consumer.Consume(cancellationToken);
+                            var message = result.Message.Value;
 
-                    action.Invoke((T)(object)message);
+                            action.Invoke(message);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            break;
+                        }
+                        catch (ConsumeException ex)
+                        {
+                            Console.WriteLine($"Error while consuming message: {ex.Message}");
+                        }
+                    }
                 }
-                catch (ConsumeException ex)
-                { }
-            }
+                finally
+                {
+                    _consumer.Close(); // Закрываем consumer при завершении
+                }
+            }, cancellationToken);
         }
 
         public void Dispose()

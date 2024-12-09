@@ -15,9 +15,32 @@ namespace Kurier.Api.Controllers
         }
 
         [HttpGet]
-        public decimal RateOrder(decimal weight)
+        public async Task<IActionResult> RateOrder(decimal weight)
         {
-            return 10;
+            KafkaService kafkaService = new KafkaService();
+            string topicIn = "example-topic-in";
+            string topicOut = "example-topic-out";
+
+            var tcs = new TaskCompletionSource<decimal>();
+            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
+            {
+                kafkaService.SubscribeOnTopic(topicOut, message =>
+                {
+                    tcs.TrySetResult(decimal.Parse(message));
+                }, cts.Token);
+
+                await kafkaService.SendMessageAsync(topicIn, weight.ToString());
+
+                try
+                {
+                    decimal answer = await tcs.Task;
+                    return Ok(answer);
+                }
+                catch (TaskCanceledException)
+                {
+                    return StatusCode(504, "Timeout while waiting for Kafka response.");
+                }
+            }
         }
 
         [HttpPost]
