@@ -18,3 +18,4 @@ Storage, основанный на Redis
 Подготовка к тестированию Kafka, прототип RateService
 OrderService, Rest api часть
 OrderService, Kafka часть
+API Gateway
