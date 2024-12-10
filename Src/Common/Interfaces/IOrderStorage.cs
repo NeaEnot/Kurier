@@ -5,6 +5,7 @@ namespace Kurier.Common.Interfaces
     public interface IOrderStorage
     {
         Task<Guid> CreateOrder(CreateOrderRequest request);
-        Task<GetOrderResponce> GetOrderById (Guid id);
+        Task<GetOrderResponse> GetOrderById (Guid id);
+        Task UpdateOrderStatus(UpdateOrderStatusRequest request);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Kurier.Common.Models
 {
-    public class GetOrderResponce
+    public class GetOrderResponse
     {
         public Guid OrderId { get; set; }
         public Guid ClientId { get; set; }
