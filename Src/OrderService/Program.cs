@@ -1,5 +1,8 @@
 using Confluent.Kafka;
+using Kurier.Common.Interfaces;
 using Kurier.OrderService.Kafka;
+using Kurier.RedisStorage;
+using StackExchange.Redis;
 
 namespace Kurier.OrderService
 {
@@ -37,6 +40,9 @@ namespace Kurier.OrderService
                 };
                 return new ConsumerBuilder<string, string>(config).Build();
             });
+
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect("localhost:6379"));
+            builder.Services.AddSingleton<IOrderStorage, RedisOrderStorage>();
 
             builder.Services.AddHostedService<KafkaConsumerHandler>();
             builder.Services.AddSingleton<KafkaProducerHandler>();

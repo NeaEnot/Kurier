@@ -10,24 +10,21 @@ namespace Kurier.Api
 
             builder.Configuration.AddJsonFile("ocelot.json");
 
-            // Add services to the container.
-
             builder.Services.AddControllers();
-
-
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
             builder.Services.AddOcelot();
+            builder.Services.AddHttpClient();
+
+            builder.Services.AddSingleton<SwaggerAggregator>();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.MapGet("/swagger/v1/swagger.json", async (SwaggerAggregator aggregator) =>
+                app.MapGet("/swagger/v1/swagger.json", async (IServiceProvider serviceProvider) =>
                 {
+                    var aggregator = serviceProvider.GetRequiredService<SwaggerAggregator>();
                     var aggregatedDoc = await aggregator.AggregateSwaggerDocsAsync();
                     return Results.Json(aggregatedDoc);
                 });

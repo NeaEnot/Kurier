@@ -20,17 +20,20 @@ namespace Kurier.OrderService.Kafka
         {
             kafkaConsumer.Subscribe("order-status");
 
-            while (!stoppingToken.IsCancellationRequested)
+            await Task.Run(() =>
             {
-                try
+                while (!stoppingToken.IsCancellationRequested)
                 {
-                    var consumeResult = kafkaConsumer.Consume(stoppingToken);
-                    if (consumeResult != null)
-                        HandleMessage(consumeResult.Value);
+                    try
+                    {
+                        var consumeResult = kafkaConsumer.Consume(stoppingToken);
+                        if (consumeResult != null)
+                            HandleMessage(consumeResult.Value);
+                    }
+                    catch (Exception ex)
+                    { }
                 }
-                catch (Exception ex)
-                { }
-            }
+            });
         }
 
         private async Task HandleMessage(string message)
