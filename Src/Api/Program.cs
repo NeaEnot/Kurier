@@ -1,4 +1,6 @@
+using Microsoft.Extensions.Configuration;
 using Ocelot.DependencyInjection;
+using Ocelot.Middleware;
 
 namespace Kurier.Api
 {
@@ -11,9 +13,9 @@ namespace Kurier.Api
             builder.Configuration.AddJsonFile("ocelot.json");
 
             builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
             builder.Services.AddOcelot();
+            builder.Services.AddSwaggerForOcelot(builder.Configuration);
+            builder.Services.AddSwaggerGen();
             builder.Services.AddHttpClient();
 
             builder.Services.AddSingleton<SwaggerAggregator>();
@@ -22,15 +24,10 @@ namespace Kurier.Api
 
             if (app.Environment.IsDevelopment())
             {
-                app.MapGet("/swagger/v1/swagger.json", async (IServiceProvider serviceProvider) =>
-                {
-                    var aggregator = serviceProvider.GetRequiredService<SwaggerAggregator>();
-                    var aggregatedDoc = await aggregator.AggregateSwaggerDocsAsync();
-                    return Results.Json(aggregatedDoc);
-                });
-
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerForOcelotUI(opt => {
+                    opt.PathToSwaggerGenerator = "/swagger/docs";
+                }).UseOcelot().Wait();
             }
 
             app.UseHttpsRedirection();

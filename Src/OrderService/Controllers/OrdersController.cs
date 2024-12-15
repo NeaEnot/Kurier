@@ -12,9 +12,10 @@ namespace Kurier.OrderService.Controllers
         private readonly IOrderStorage orderStorage;
         private readonly KafkaProducerHandler kafkaProducer;
 
-        public OrdersController(IOrderStorage orderStorage)
+        public OrdersController(IOrderStorage orderStorage, KafkaProducerHandler kafkaProducer)
         {
             this.orderStorage = orderStorage;
+            this.kafkaProducer = kafkaProducer;
         }
 
         [HttpPost]
