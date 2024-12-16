@@ -2,7 +2,7 @@
 using Kurier.Common.Models;
 using System.Text.Json;
 
-namespace Kurier.DeliveryService.Kafka
+namespace Kurier.ClientService.Kafka
 {
     public class KafkaConsumerHandler : BackgroundService
     {
@@ -15,7 +15,7 @@ namespace Kurier.DeliveryService.Kafka
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            kafkaConsumer.Subscribe("order-created-events");
+            kafkaConsumer.Subscribe("order-updated-events");
 
             await Task.Run(() =>
             {
@@ -35,9 +35,14 @@ namespace Kurier.DeliveryService.Kafka
 
         private async Task HandleMessage(string message)
         {
-            OrderCreatedEvent evt = JsonSerializer.Deserialize<OrderCreatedEvent>(message);
-            Console.WriteLine($"Получено сообщение о создании заказа: {evt.OrderId}");
+            OrderUpdatedEvent evt = JsonSerializer.Deserialize<OrderUpdatedEvent>(message);
+
             // STUB
+            // Получаем из Redis NotificationsList по evt.ClientId
+            // если null, то:
+            NotificationsList notificationsList = new NotificationsList { ClientId = evt.ClientId };
+            notificationsList.Notifications.Add($"Заказ {evt.OrderId} переведён в статус {evt.NewStatus}");
+            // сохраняем в Redis
         }
     }
 }

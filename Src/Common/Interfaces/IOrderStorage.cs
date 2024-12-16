@@ -6,6 +6,6 @@ namespace Kurier.Common.Interfaces
     {
         Task<Guid> CreateOrder(CreateOrderRequest request);
         Task<GetOrderResponse> GetOrderById (Guid id);
-        Task UpdateOrderStatus(UpdateOrderStatusRequest request);
+        Task<OrderUpdatedEvent> UpdateOrderStatus(UpdateOrderStatusRequest request);
     }
 }

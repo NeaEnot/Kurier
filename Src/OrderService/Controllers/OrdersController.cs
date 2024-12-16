@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Kurier.OrderService.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class OrdersController : ControllerBase
     {
         private readonly IOrderStorage orderStorage;
@@ -18,7 +18,7 @@ namespace Kurier.OrderService.Controllers
             this.kafkaProducer = kafkaProducer;
         }
 
-        [HttpPost("CreateOrder")]
+        [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
         {
             Guid id = await orderStorage.CreateOrder(request);
@@ -31,12 +31,12 @@ namespace Kurier.OrderService.Controllers
                 DeliveryAddress = request.DeliveryAddress
             };
 
-            await kafkaProducer.PublishEventAsync("order-events", id.ToString(), evt);
+            await kafkaProducer.PublishEventAsync("order-created-events", id.ToString(), evt);
 
             return Ok(id);
         }
 
-        [HttpGet("GetOrderById/{orderId}")]
+        [HttpGet]
         public async Task<IActionResult> GetOrderById(Guid orderId)
         {
             var order = await orderStorage.GetOrderById(orderId);

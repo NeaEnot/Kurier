@@ -9,11 +9,13 @@ namespace Kurier.OrderService.Kafka
     {
         private readonly IConsumer<string, string> kafkaConsumer;
         private readonly IOrderStorage orderStorage;
+        private readonly KafkaProducerHandler kafkaProducer;
 
-        public KafkaConsumerHandler(IConsumer<string, string> kafkaConsumer, IOrderStorage orderStorage)
+        public KafkaConsumerHandler(IConsumer<string, string> kafkaConsumer, IOrderStorage orderStorage, KafkaProducerHandler kafkaProducer)
         {
             this.kafkaConsumer = kafkaConsumer;
             this.orderStorage = orderStorage;
+            this.kafkaProducer = kafkaProducer;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -39,7 +41,8 @@ namespace Kurier.OrderService.Kafka
         private async Task HandleMessage(string message)
         {
             UpdateOrderStatusRequest request = JsonSerializer.Deserialize<UpdateOrderStatusRequest>(message);
-            await orderStorage.UpdateOrderStatus(request);
+            OrderUpdatedEvent evt = await orderStorage.UpdateOrderStatus(request);
+            await kafkaProducer.PublishEventAsync("order-updated-events", evt.OrderId.ToString(), evt);
         }
     }
 }

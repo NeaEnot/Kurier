@@ -66,7 +66,7 @@ namespace Kurier.RedisStorage
             };
         }
 
-        public async Task UpdateOrderStatus(UpdateOrderStatusRequest request)
+        public async Task<OrderUpdatedEvent> UpdateOrderStatus(UpdateOrderStatusRequest request)
         {
             var key = GetOrderKey(request.OrderId);
             var value = await _db.StringGetAsync(key);
@@ -83,6 +83,13 @@ namespace Kurier.RedisStorage
 
             var updatedValue = JsonSerializer.Serialize(order);
             await _db.StringSetAsync(key, updatedValue);
+
+            return new OrderUpdatedEvent
+            {
+                OrderId = order.OrderId,
+                ClientId = order.ClientId,
+                NewStatus = order.Status
+            };
         }
 
         private string GetOrderKey(Guid orderId) => $"order:{orderId}";
