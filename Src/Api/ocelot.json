@@ -12,6 +12,19 @@
       "SwaggerKey": "orders",
       "UpstreamPathTemplate": "/api/orders/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/delivery/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7148
+        }
+      ],
+      "SwaggerKey": "delivery",
+      "UpstreamPathTemplate": "/api/delivery/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     }
   ],
   "SwaggerEndPoints": [
@@ -22,6 +35,16 @@
           "Name": "Orders API",
           "Version": "v1",
           "Url": "https://localhost:7110/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "delivery",
+      "Config": [
+        {
+          "Name": "Delivery API",
+          "Version": "v1",
+          "Url": "https://localhost:7148/swagger/v1/swagger.json"
         }
       ]
     }

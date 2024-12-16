@@ -18,7 +18,7 @@ namespace Kurier.OrderService.Controllers
             this.kafkaProducer = kafkaProducer;
         }
 
-        [HttpPost]
+        [HttpPost("CreateOrder")]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
         {
             Guid id = await orderStorage.CreateOrder(request);
@@ -36,7 +36,7 @@ namespace Kurier.OrderService.Controllers
             return Ok(id);
         }
 
-        [HttpGet("{orderId}")]
+        [HttpGet("GetOrderById/{orderId}")]
         public async Task<IActionResult> GetOrderById(Guid orderId)
         {
             var order = await orderStorage.GetOrderById(orderId);

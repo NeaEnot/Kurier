@@ -18,8 +18,6 @@ namespace Kurier.Api
             builder.Services.AddSwaggerGen();
             builder.Services.AddHttpClient();
 
-            builder.Services.AddSingleton<SwaggerAggregator>();
-
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())

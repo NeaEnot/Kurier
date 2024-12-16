@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "Api\Api.csproj", "{4
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService", "OrderService\OrderService.csproj", "{2B859C2E-3BCD-45B4-9B1F-EA3CB3AD4347}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisStorage", "RedisStorage\RedisStorage.csproj", "{D8B7CB5B-90BD-403E-92C2-F02663E26273}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedisStorage", "RedisStorage\RedisStorage.csproj", "{D8B7CB5B-90BD-403E-92C2-F02663E26273}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryService", "DeliveryService\DeliveryService.csproj", "{9958EB12-C466-448A-AE9A-9A4EFEE0F03E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{D8B7CB5B-90BD-403E-92C2-F02663E26273}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8B7CB5B-90BD-403E-92C2-F02663E26273}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8B7CB5B-90BD-403E-92C2-F02663E26273}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9958EB12-C466-448A-AE9A-9A4EFEE0F03E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9958EB12-C466-448A-AE9A-9A4EFEE0F03E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9958EB12-C466-448A-AE9A-9A4EFEE0F03E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9958EB12-C466-448A-AE9A-9A4EFEE0F03E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
