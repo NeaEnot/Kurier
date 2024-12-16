@@ -11,7 +11,12 @@
       ],
       "SwaggerKey": "orders",
       "UpstreamPathTemplate": "/api/orders/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "QoSOptions": { // Circuit Breaker
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 30000,
+        "TimeoutValue": 10000
+      }
     },
     {
       "DownstreamPathTemplate": "/api/delivery/{everything}",
@@ -24,7 +29,12 @@
       ],
       "SwaggerKey": "delivery",
       "UpstreamPathTemplate": "/api/delivery/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 30000,
+        "TimeoutValue": 10000
+      }
     }
   ],
   "SwaggerEndPoints": [
