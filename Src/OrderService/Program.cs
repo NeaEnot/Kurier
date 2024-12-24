@@ -20,9 +20,9 @@ namespace Kurier.OrderService
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "Order service", Version = "v1" }); });
 
-            builder.Services.AddKafka<KafkaConsumerHandler>();
+            builder.Services.AddKafka<KafkaConsumerHandler>(builder.Configuration);
 
-            builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect("localhost:6379"));
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(builder.Configuration["Redis:ConnectionAddress"]));
             builder.Services.AddSingleton<IOrderStorage, RedisOrderStorage>();
 
             var app = builder.Build();

@@ -1,18 +1,20 @@
 ﻿using Confluent.Kafka;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kurier.Common.Kafka
 {
     public static class KafkaExtension
     {
-        public static IServiceCollection AddKafka<TConsumerHandler>(this IServiceCollection services) where TConsumerHandler : AbstactKafkaConsumerHandler
+        public static IServiceCollection AddKafka<TConsumerHandler>(this IServiceCollection services, IConfiguration configuration)
+            where TConsumerHandler : AbstactKafkaConsumerHandler
         {
             return services
                 .AddSingleton<IProducer<string, string>>(sp =>
                 {
                     var config = new ProducerConfig
                     {
-                        BootstrapServers = "localhost:9092",
+                        BootstrapServers = configuration["Kafka:BootstrapServers"],
                         EnableIdempotence = true,
                         Acks = Acks.All
                     };
@@ -22,8 +24,8 @@ namespace Kurier.Common.Kafka
                 {
                     var config = new ConsumerConfig
                     {
-                        GroupId = "kurier-group",
-                        BootstrapServers = "localhost:9092",
+                        GroupId = configuration["Kafka:GroupId"],
+                        BootstrapServers = configuration["Kafka:BootstrapServers"],
                         AutoOffsetReset = AutoOffsetReset.Earliest
                     };
                     return new ConsumerBuilder<string, string>(config).Build();

@@ -17,7 +17,7 @@ namespace Kurier.DeliveryService
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "Delivery service", Version = "v1" }); });
 
-            builder.Services.AddKafka<KafkaConsumerHandler>();
+            builder.Services.AddKafka<KafkaConsumerHandler>(builder.Configuration);
 
             var app = builder.Build();
 
