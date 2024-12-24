@@ -24,7 +24,7 @@ namespace Kurier.Common.Kafka
                     {
                         var consumeResult = kafkaConsumer.Consume(stoppingToken);
                         if (consumeResult != null)
-                            HandleMessage(consumeResult.Value);
+                            HandleMessage(consumeResult.Value, consumeResult.Topic);
                     }
                     catch (Exception ex)
                     { }
@@ -34,6 +34,6 @@ namespace Kurier.Common.Kafka
 
         protected abstract string[] Topics { get; }
 
-        protected abstract Task HandleMessage(string message);
+        protected abstract Task HandleMessage(string message, string topic);
     }
 }

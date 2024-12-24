@@ -19,7 +19,7 @@ namespace Kurier.OrderService.Kafka
 
         protected override string[] Topics => new string[] { "order-status" };
 
-        protected override async Task HandleMessage(string message)
+        protected override async Task HandleMessage(string message, string topic)
         {
             UpdateOrderStatusRequest request = JsonSerializer.Deserialize<UpdateOrderStatusRequest>(message);
             OrderUpdatedEvent evt = await orderStorage.UpdateOrderStatus(request);

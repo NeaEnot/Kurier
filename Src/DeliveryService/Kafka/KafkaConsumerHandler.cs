@@ -9,13 +9,24 @@ namespace Kurier.DeliveryService.Kafka
     {
         public KafkaConsumerHandler(IConsumer<string, string> kafkaConsumer) : base(kafkaConsumer) { }
 
-        protected override string[] Topics => new string[] { "order-created-events" };
+        protected override string[] Topics => new string[] { "order-created-events", "order-canceled-events" };
 
-        protected override Task HandleMessage(string message)
+        protected override Task HandleMessage(string message, string topic)
         {
-            OrderCreatedEvent evt = JsonSerializer.Deserialize<OrderCreatedEvent>(message);
-            Console.WriteLine($"Получено сообщение о создании заказа: {evt.OrderId}");
-            // STUB
+            switch (topic)
+            {
+                case "order-created-events":
+                    OrderCreatedEvent evt = JsonSerializer.Deserialize<OrderCreatedEvent>(message);
+                    Console.WriteLine($"Получено сообщение о создании заказа: {evt.OrderId}");
+                    // STUB
+                    break;
+                case "order-canceled-events":
+                    Guid orderId = JsonSerializer.Deserialize<Guid>(message);
+                    Console.WriteLine($"Получено сообщение об отмене заказа: {orderId}");
+                    // STUB
+                    break;
+            }
+
             return null;
         }
     }

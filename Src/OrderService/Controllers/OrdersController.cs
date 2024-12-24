@@ -1,6 +1,7 @@
-﻿using Kurier.Common.Interfaces;
+﻿using Kurier.Common.Enums;
+using Kurier.Common.Interfaces;
+using Kurier.Common.Kafka;
 using Kurier.Common.Models;
-using Kurier.OrderService.Kafka;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kurier.OrderService.Controllers
@@ -36,7 +37,7 @@ namespace Kurier.OrderService.Controllers
             return Ok(id);
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> GetOrderById(Guid orderId)
         {
             var order = await orderStorage.GetOrderById(orderId);
@@ -45,6 +46,24 @@ namespace Kurier.OrderService.Controllers
                 return NotFound();
             }
             return Ok(order);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CancelOrder(Guid orderId)
+        {
+            var order = await orderStorage.GetOrderById(orderId);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            UpdateOrderStatusRequest request = new UpdateOrderStatusRequest { OrderId = orderId, Status = OrderStatus.Canceled };
+            await orderStorage.UpdateOrderStatus(request);
+
+            await kafkaProducer.PublishEventAsync("order-canceled-events", orderId.ToString(), orderId);
+
+            return Ok();
         }
     }
 }

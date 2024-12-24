@@ -1,5 +1,5 @@
-﻿using Kurier.Common.Models;
-using Kurier.DeliveryService.Kafka;
+﻿using Kurier.Common.Kafka;
+using Kurier.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kurier.DeliveryService.Controllers
