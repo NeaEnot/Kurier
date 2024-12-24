@@ -1,13 +1,13 @@
 ﻿using Kurier.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Kurier.ClientService.Controllers
+namespace Kurier.DeliveryService.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    public class ClientsController : ControllerBase
+    public class CourierController : ControllerBase
     {
-        public ClientsController()
+        public CourierController()
         {
 
         }
@@ -38,16 +38,6 @@ namespace Kurier.ClientService.Controllers
             // Записываем token в redis
 
             return token.TokenId;
-        }
-
-        [HttpGet]
-        public async Task<NotificationsList> GetNotifications([FromBody] Guid clientId)
-        {
-            // STUB
-            // Получаем список уведомлений из Redis
-            // Удаляем список уведомлений из Redis
-
-            return null;
         }
     }
 }

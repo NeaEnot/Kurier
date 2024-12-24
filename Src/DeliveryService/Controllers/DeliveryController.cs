@@ -16,6 +16,16 @@ namespace Kurier.DeliveryService.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> AssignCourierForDelivery([FromBody] AssignDeliveryRequest request)
+        {
+            // STUB
+            // Записываем в Redis что курьер связан с заказом
+            // Может быть отправить через kafka сообщение клиенту о назначении курьера
+
+            return Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateOrderStatusRequest request)
         {
             await kafkaProducer.PublishEventAsync("order-status", request.OrderId.ToString(), request);
