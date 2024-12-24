@@ -1,39 +1,17 @@
 ﻿using Confluent.Kafka;
+using Kurier.Common.Kafka;
 using Kurier.Common.Models;
 using System.Text.Json;
 
 namespace Kurier.ClientService.Kafka
 {
-    public class KafkaConsumerHandler : BackgroundService
+    public class KafkaConsumerHandler : AbstactKafkaConsumerHandler
     {
-        private readonly IConsumer<string, string> kafkaConsumer;
+        public KafkaConsumerHandler(IConsumer<string, string> kafkaConsumer) : base(kafkaConsumer) { }
 
-        public KafkaConsumerHandler(IConsumer<string, string> kafkaConsumer)
-        {
-            this.kafkaConsumer = kafkaConsumer;
-        }
+        protected override string[] Topics => new string[] { "order-updated-events" };
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            kafkaConsumer.Subscribe("order-updated-events");
-
-            await Task.Run(() =>
-            {
-                while (!stoppingToken.IsCancellationRequested)
-                {
-                    try
-                    {
-                        var consumeResult = kafkaConsumer.Consume(stoppingToken);
-                        if (consumeResult != null)
-                            HandleMessage(consumeResult.Value);
-                    }
-                    catch (Exception ex)
-                    { }
-                }
-            });
-        }
-
-        private async Task HandleMessage(string message)
+        protected override Task HandleMessage(string message)
         {
             OrderUpdatedEvent evt = JsonSerializer.Deserialize<OrderUpdatedEvent>(message);
 
@@ -43,6 +21,8 @@ namespace Kurier.ClientService.Kafka
             NotificationsList notificationsList = new NotificationsList { ClientId = evt.ClientId };
             notificationsList.Notifications.Add($"Заказ {evt.OrderId} переведён в статус {evt.NewStatus}");
             // сохраняем в Redis
+
+            return null;
         }
     }
 }

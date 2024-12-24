@@ -1,5 +1,4 @@
-
-using Confluent.Kafka;
+using Kurier.Common.Kafka;
 using Kurier.DeliveryService.Kafka;
 using Microsoft.OpenApi.Models;
 
@@ -18,30 +17,7 @@ namespace Kurier.DeliveryService
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "Delivery service", Version = "v1" }); });
 
-            builder.Services.AddSingleton<IProducer<string, string>>(sp =>
-            {
-                var config = new ProducerConfig
-                {
-                    BootstrapServers = "localhost:9092",
-                    EnableIdempotence = true,
-                    Acks = Acks.All
-                };
-                return new ProducerBuilder<string, string>(config).Build();
-            });
-
-            builder.Services.AddSingleton<IConsumer<string, string>>(sp =>
-            {
-                var config = new ConsumerConfig
-                {
-                    GroupId = "delivery-service-group",
-                    BootstrapServers = "localhost:9092",
-                    AutoOffsetReset = AutoOffsetReset.Earliest
-                };
-                return new ConsumerBuilder<string, string>(config).Build();
-            });
-
-            builder.Services.AddHostedService<KafkaConsumerHandler>();
-            builder.Services.AddSingleton<KafkaProducerHandler>();
+            builder.Services.AddKafka<KafkaConsumerHandler>();
 
             var app = builder.Build();
 

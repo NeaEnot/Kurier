@@ -1,7 +1,7 @@
 ﻿using Confluent.Kafka;
 using System.Text.Json;
 
-namespace Kurier.OrderService.Kafka
+namespace Kurier.Common.Kafka
 {
     public class KafkaProducerHandler
     {

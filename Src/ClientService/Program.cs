@@ -1,5 +1,5 @@
-using Confluent.Kafka;
 using Kurier.ClientService.Kafka;
+using Kurier.Common.Kafka;
 using Microsoft.OpenApi.Models;
 
 namespace Kurier.ClientService
@@ -17,18 +17,7 @@ namespace Kurier.ClientService
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "Client service", Version = "v1" }); });
 
-            builder.Services.AddSingleton<IConsumer<string, string>>(sp =>
-            {
-                var config = new ConsumerConfig
-                {
-                    GroupId = "order-service-group",
-                    BootstrapServers = "localhost:9092",
-                    AutoOffsetReset = AutoOffsetReset.Earliest
-                };
-                return new ConsumerBuilder<string, string>(config).Build();
-            });
-
-            builder.Services.AddHostedService<KafkaConsumerHandler>();
+            builder.Services.AddKafka<KafkaConsumerHandler>();
 
             var app = builder.Build();
 

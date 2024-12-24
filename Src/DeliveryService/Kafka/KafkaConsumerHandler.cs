@@ -1,43 +1,22 @@
 ﻿using Confluent.Kafka;
+using Kurier.Common.Kafka;
 using Kurier.Common.Models;
 using System.Text.Json;
 
 namespace Kurier.DeliveryService.Kafka
 {
-    public class KafkaConsumerHandler : BackgroundService
+    public class KafkaConsumerHandler : AbstactKafkaConsumerHandler
     {
-        private readonly IConsumer<string, string> kafkaConsumer;
+        public KafkaConsumerHandler(IConsumer<string, string> kafkaConsumer) : base(kafkaConsumer) { }
 
-        public KafkaConsumerHandler(IConsumer<string, string> kafkaConsumer)
-        {
-            this.kafkaConsumer = kafkaConsumer;
-        }
+        protected override string[] Topics => new string[] { "order-created-events" };
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            kafkaConsumer.Subscribe("order-created-events");
-
-            await Task.Run(() =>
-            {
-                while (!stoppingToken.IsCancellationRequested)
-                {
-                    try
-                    {
-                        var consumeResult = kafkaConsumer.Consume(stoppingToken);
-                        if (consumeResult != null)
-                            HandleMessage(consumeResult.Value);
-                    }
-                    catch (Exception ex)
-                    { }
-                }
-            });
-        }
-
-        private async Task HandleMessage(string message)
+        protected override Task HandleMessage(string message)
         {
             OrderCreatedEvent evt = JsonSerializer.Deserialize<OrderCreatedEvent>(message);
             Console.WriteLine($"Получено сообщение о создании заказа: {evt.OrderId}");
             // STUB
+            return null;
         }
     }
 }

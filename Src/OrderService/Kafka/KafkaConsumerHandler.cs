@@ -1,44 +1,25 @@
 ﻿using Confluent.Kafka;
 using Kurier.Common.Interfaces;
+using Kurier.Common.Kafka;
 using Kurier.Common.Models;
 using System.Text.Json;
 
 namespace Kurier.OrderService.Kafka
 {
-    public class KafkaConsumerHandler : BackgroundService
+    public class KafkaConsumerHandler : AbstactKafkaConsumerHandler
     {
-        private readonly IConsumer<string, string> kafkaConsumer;
         private readonly IOrderStorage orderStorage;
         private readonly KafkaProducerHandler kafkaProducer;
 
-        public KafkaConsumerHandler(IConsumer<string, string> kafkaConsumer, IOrderStorage orderStorage, KafkaProducerHandler kafkaProducer)
+        public KafkaConsumerHandler(IConsumer<string, string> kafkaConsumer, IOrderStorage orderStorage, KafkaProducerHandler kafkaProducer) : base(kafkaConsumer)
         {
-            this.kafkaConsumer = kafkaConsumer;
             this.orderStorage = orderStorage;
             this.kafkaProducer = kafkaProducer;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            kafkaConsumer.Subscribe("order-status");
+        protected override string[] Topics => new string[] { "order-status" };
 
-            await Task.Run(() =>
-            {
-                while (!stoppingToken.IsCancellationRequested)
-                {
-                    try
-                    {
-                        var consumeResult = kafkaConsumer.Consume(stoppingToken);
-                        if (consumeResult != null)
-                            HandleMessage(consumeResult.Value);
-                    }
-                    catch (Exception ex)
-                    { }
-                }
-            });
-        }
-
-        private async Task HandleMessage(string message)
+        protected override async Task HandleMessage(string message)
         {
             UpdateOrderStatusRequest request = JsonSerializer.Deserialize<UpdateOrderStatusRequest>(message);
             OrderUpdatedEvent evt = await orderStorage.UpdateOrderStatus(request);
