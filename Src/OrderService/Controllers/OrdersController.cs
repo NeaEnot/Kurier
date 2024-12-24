@@ -1,4 +1,5 @@
-﻿using Kurier.Common.Enums;
+﻿using Kurier.Common;
+using Kurier.Common.Enums;
 using Kurier.Common.Interfaces;
 using Kurier.Common.Kafka;
 using Kurier.Common.Models;
@@ -32,7 +33,7 @@ namespace Kurier.OrderService.Controllers
                 DeliveryAddress = request.DeliveryAddress
             };
 
-            await kafkaProducer.PublishEventAsync("order-created-events", id.ToString(), evt);
+            await kafkaProducer.PublishEventAsync(Constants.Topics.OrderCreatedEvents, id.ToString(), evt);
 
             return Ok(id);
         }
@@ -61,7 +62,7 @@ namespace Kurier.OrderService.Controllers
             UpdateOrderStatusRequest request = new UpdateOrderStatusRequest { OrderId = orderId, Status = OrderStatus.Canceled };
             await orderStorage.UpdateOrderStatus(request);
 
-            await kafkaProducer.PublishEventAsync("order-canceled-events", orderId.ToString(), orderId);
+            await kafkaProducer.PublishEventAsync(Constants.Topics.OrderCanceledEvents, orderId.ToString(), orderId);
 
             return Ok();
         }

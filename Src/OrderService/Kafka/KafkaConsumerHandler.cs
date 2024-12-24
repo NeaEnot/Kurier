@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using Kurier.Common;
 using Kurier.Common.Interfaces;
 using Kurier.Common.Kafka;
 using Kurier.Common.Models;
@@ -17,13 +18,13 @@ namespace Kurier.OrderService.Kafka
             this.kafkaProducer = kafkaProducer;
         }
 
-        protected override string[] Topics => new string[] { "order-status" };
+        protected override string[] Topics => new string[] { Constants.Topics.OrderStatus };
 
         protected override async Task HandleMessage(string message, string topic)
         {
             UpdateOrderStatusRequest request = JsonSerializer.Deserialize<UpdateOrderStatusRequest>(message);
             OrderUpdatedEvent evt = await orderStorage.UpdateOrderStatus(request);
-            await kafkaProducer.PublishEventAsync("order-updated-events", evt.OrderId.ToString(), evt);
+            await kafkaProducer.PublishEventAsync(Constants.Topics.OrderUpdatedEvents, evt.OrderId.ToString(), evt);
         }
     }
 }

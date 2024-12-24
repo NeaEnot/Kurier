@@ -1,4 +1,5 @@
-﻿using Kurier.Common.Kafka;
+﻿using Kurier.Common;
+using Kurier.Common.Kafka;
 using Kurier.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,7 +29,7 @@ namespace Kurier.DeliveryService.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateOrderStatusRequest request)
         {
-            await kafkaProducer.PublishEventAsync("order-status", request.OrderId.ToString(), request);
+            await kafkaProducer.PublishEventAsync(Constants.Topics.OrderStatus, request.OrderId.ToString(), request);
 
             return Ok();
         }

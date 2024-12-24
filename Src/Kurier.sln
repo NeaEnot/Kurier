@@ -11,9 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService", "OrderServic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedisStorage", "RedisStorage\RedisStorage.csproj", "{D8B7CB5B-90BD-403E-92C2-F02663E26273}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryService", "DeliveryService\DeliveryService.csproj", "{9958EB12-C466-448A-AE9A-9A4EFEE0F03E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliveryService", "DeliveryService\DeliveryService.csproj", "{9958EB12-C466-448A-AE9A-9A4EFEE0F03E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientService", "ClientService\ClientService.csproj", "{6B3D9F33-C3C2-4CBD-BE96-BDA08A0E088F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientService", "ClientService\ClientService.csproj", "{6B3D9F33-C3C2-4CBD-BE96-BDA08A0E088F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{B9F5F95C-C1C3-4B9E-BB43-1899A80574EC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Storage", "Storage", "{83854ECE-8013-4426-A6B6-8A999D1C4AB9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +52,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2B859C2E-3BCD-45B4-9B1F-EA3CB3AD4347} = {B9F5F95C-C1C3-4B9E-BB43-1899A80574EC}
+		{D8B7CB5B-90BD-403E-92C2-F02663E26273} = {83854ECE-8013-4426-A6B6-8A999D1C4AB9}
+		{9958EB12-C466-448A-AE9A-9A4EFEE0F03E} = {B9F5F95C-C1C3-4B9E-BB43-1899A80574EC}
+		{6B3D9F33-C3C2-4CBD-BE96-BDA08A0E088F} = {B9F5F95C-C1C3-4B9E-BB43-1899A80574EC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {98933504-B5F6-4A22-B289-662251213AB6}

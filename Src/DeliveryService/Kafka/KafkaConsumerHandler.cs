@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using Kurier.Common;
 using Kurier.Common.Kafka;
 using Kurier.Common.Models;
 using System.Text.Json;
@@ -9,18 +10,18 @@ namespace Kurier.DeliveryService.Kafka
     {
         public KafkaConsumerHandler(IConsumer<string, string> kafkaConsumer) : base(kafkaConsumer) { }
 
-        protected override string[] Topics => new string[] { "order-created-events", "order-canceled-events" };
+        protected override string[] Topics => new string[] { Constants.Topics.OrderCreatedEvents, Constants.Topics.OrderCanceledEvents };
 
         protected override Task HandleMessage(string message, string topic)
         {
             switch (topic)
             {
-                case "order-created-events":
+                case Constants.Topics.OrderCreatedEvents:
                     OrderCreatedEvent evt = JsonSerializer.Deserialize<OrderCreatedEvent>(message);
                     Console.WriteLine($"Получено сообщение о создании заказа: {evt.OrderId}");
                     // STUB
                     break;
-                case "order-canceled-events":
+                    case Constants.Topics.OrderCanceledEvents:
                     Guid orderId = JsonSerializer.Deserialize<Guid>(message);
                     Console.WriteLine($"Получено сообщение об отмене заказа: {orderId}");
                     // STUB
