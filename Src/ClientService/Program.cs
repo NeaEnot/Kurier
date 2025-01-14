@@ -20,7 +20,7 @@ namespace Kurier.ClientService
 
             builder.Services.AddKafka<KafkaConsumerHandler>(builder.Configuration);
 
-            builder.Services.AddSingleton<IClientStorage, IClientStorage>(); // TODO: Заменить на реализацию
+            builder.Services.AddSingleton<IUserStorage, IUserStorage>(); // TODO: Заменить на реализацию
 
             var app = builder.Build();
 

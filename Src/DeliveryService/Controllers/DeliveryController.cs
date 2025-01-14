@@ -27,8 +27,12 @@ namespace Kurier.DeliveryService.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateStatus([FromBody] UpdateOrderStatusRequest request)
+        public async Task<IActionResult> UpdateStatus([FromBody] UpdateOrderStatusRequest request, [FromBody] Guid courierTokenId)
         {
+            // STUB
+            // Получаем токен курьера
+            // Проверяем, что изменяет статус тот курьер, который назначен на заказ
+
             await kafkaProducer.PublishEventAsync(Constants.Topics.OrderStatus, request.OrderId.ToString(), request);
 
             return Ok();

@@ -2,7 +2,7 @@
 {
     public class AuthResponse
     {
-        public Guid? TokenId { get; set; }
+        public UserAuthToken Token { get; set; }
         public string Message { get; set; }
     }
 }

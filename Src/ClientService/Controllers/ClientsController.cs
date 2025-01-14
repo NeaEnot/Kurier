@@ -8,11 +8,11 @@ namespace Kurier.ClientService.Controllers
     [Route("api/[controller]/[action]")]
     public class ClientsController : ControllerBase
     {
-        private IClientStorage clientStorage;
+        private IUserStorage userStorage;
 
-        public ClientsController(IClientStorage clientStorage)
+        public ClientsController(IUserStorage clientStorage)
         {
-            this.clientStorage = clientStorage;
+            this.userStorage = clientStorage;
         }
 
         [HttpPost]
@@ -20,8 +20,7 @@ namespace Kurier.ClientService.Controllers
         {
             try
             {
-                await clientStorage.Register(request);
-
+                await userStorage.Register(request);
                 return Ok();
             }
             catch (Exception ex)
@@ -37,7 +36,7 @@ namespace Kurier.ClientService.Controllers
 
             try
             {
-                Guid clientId = await clientStorage.Auth(request);
+                Guid clientId = await userStorage.Auth(request);
 
                 UserAuthToken token = new UserAuthToken
                 {
@@ -69,9 +68,10 @@ namespace Kurier.ClientService.Controllers
         }
 
         [HttpGet]
-        public async Task<NotificationsList> GetNotifications([FromBody] Guid clientId)
+        public async Task<NotificationsList> GetNotifications([FromBody] Guid tokenId)
         {
             // STUB
+            // Получаем токен клиента
             // Получаем список уведомлений из Redis
             // Удаляем список уведомлений из Redis
 

@@ -2,7 +2,7 @@
 
 namespace Kurier.Common.Interfaces
 {
-    public interface IClientStorage
+    public interface IUserStorage
     {
         Task Register(UserRequest request);
         Task<Guid> Auth(UserRequest request);
