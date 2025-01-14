@@ -1,13 +1,7 @@
 ﻿namespace Kurier.Common.Models
 {
-    public class NotificationsList
+    public class NotificationsList : List<string>
     {
         public Guid ClientId { get; set; }
-        public List<string> Notifications { get; set; }
-
-        public NotificationsList()
-        {
-            Notifications = new List<string>();
-        }
     }
 }

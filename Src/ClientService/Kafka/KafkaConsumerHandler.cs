@@ -23,7 +23,7 @@ namespace Kurier.ClientService.Kafka
                     // Получаем из Redis NotificationsList по evt.ClientId
                     // если null, то:
                     NotificationsList notificationsList = new NotificationsList { ClientId = evt.ClientId };
-                    notificationsList.Notifications.Add($"Заказ {evt.OrderId} переведён в статус {evt.NewStatus}");
+                    notificationsList.Add($"Заказ {evt.OrderId} переведён в статус {evt.NewStatus}");
                     // сохраняем в Redis
                     break;
                 case Constants.Topics.OrderCanceledEvents:

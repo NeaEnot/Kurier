@@ -1,4 +1,5 @@
 using Kurier.ClientService.Kafka;
+using Kurier.Common.Interfaces;
 using Kurier.Common.Kafka;
 using Microsoft.OpenApi.Models;
 
@@ -18,6 +19,8 @@ namespace Kurier.ClientService
             builder.Services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "Client service", Version = "v1" }); });
 
             builder.Services.AddKafka<KafkaConsumerHandler>(builder.Configuration);
+
+            builder.Services.AddSingleton<IClientStorage, IClientStorage>(); // TODO: Заменить на реализацию
 
             var app = builder.Build();
 
