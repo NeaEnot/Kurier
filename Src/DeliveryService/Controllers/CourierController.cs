@@ -9,10 +9,12 @@ namespace Kurier.DeliveryService.Controllers
     public class CourierController : ControllerBase
     {
         private IUserStorage userStorage;
+        private IAuthTokenStorage authTokenStorage;
 
-        public CourierController(IUserStorage clientStorage)
+        public CourierController(IUserStorage clientStorage, IAuthTokenStorage authTokenStorage)
         {
             this.userStorage = clientStorage;
+            this.authTokenStorage = authTokenStorage;
         }
 
         [HttpPost]
@@ -36,17 +38,9 @@ namespace Kurier.DeliveryService.Controllers
 
             try
             {
-                Guid clientId = await userStorage.Auth(request);
+                Guid courierId = await userStorage.Auth(request);
 
-                UserAuthToken token = new UserAuthToken
-                {
-                    TokenId = Guid.NewGuid(),
-                    UserId = clientId,
-                    EndTime = DateTime.Now.AddMinutes(20)
-                };
-
-                // STUB
-                // Записываем token в redis
+                UserAuthToken token = await authTokenStorage.CreateToken(courierId);
 
                 response = new AuthResponse
                 {

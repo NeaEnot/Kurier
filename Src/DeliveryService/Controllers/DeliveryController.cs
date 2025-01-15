@@ -1,4 +1,5 @@
 ﻿using Kurier.Common;
+using Kurier.Common.Interfaces;
 using Kurier.Common.Kafka;
 using Kurier.Common.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,12 @@ namespace Kurier.DeliveryService.Controllers
     public class DeliveryController : ControllerBase
     {
         private readonly KafkaProducerHandler kafkaProducer;
+        private IAuthTokenStorage authTokenStorage;
 
-        public DeliveryController(KafkaProducerHandler kafkaProducer)
+        public DeliveryController(KafkaProducerHandler kafkaProducer, IAuthTokenStorage authTokenStorage)
         {
             this.kafkaProducer = kafkaProducer;
+            this.authTokenStorage = authTokenStorage;
         }
 
         [HttpPost]
@@ -29,8 +32,9 @@ namespace Kurier.DeliveryService.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateOrderStatusRequest request, [FromBody] Guid courierTokenId)
         {
+            UserAuthToken token = await authTokenStorage.GetToken(courierTokenId);
+
             // STUB
-            // Получаем токен курьера
             // Проверяем, что изменяет статус тот курьер, который назначен на заказ
 
             await kafkaProducer.PublishEventAsync(Constants.Topics.OrderStatus, request.OrderId.ToString(), request);

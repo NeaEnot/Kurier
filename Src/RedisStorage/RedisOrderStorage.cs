@@ -21,8 +21,8 @@ namespace Kurier.RedisStorage
 
         public async Task<Guid> CreateOrder(CreateOrderRequest request)
         {
-            var orderId = Guid.NewGuid();
-            var order = new Order
+            Guid orderId = Guid.NewGuid();
+            Order order = new Order
             {
                 OrderId = orderId,
                 ClientId = request.ClientId,
@@ -34,8 +34,8 @@ namespace Kurier.RedisStorage
                 LastUpdate = DateTime.Now
             };
 
-            var key = GetOrderKey(orderId);
-            var value = JsonSerializer.Serialize(order);
+            string key = GetOrderKey(orderId);
+            string value = JsonSerializer.Serialize(order);
 
             await _db.StringSetAsync(key, value);
 
@@ -44,15 +44,15 @@ namespace Kurier.RedisStorage
 
         public async Task<GetOrderResponse> GetOrderById(Guid id)
         {
-            var key = GetOrderKey(id);
-            var value = await _db.StringGetAsync(key);
+            string key = GetOrderKey(id);
+            RedisValue value = await _db.StringGetAsync(key);
 
             if (value.IsNullOrEmpty)
             {
                 throw new KeyNotFoundException($"Order with ID {id} not found.");
             }
 
-            var order = JsonSerializer.Deserialize<Order>(value);
+            Order order = JsonSerializer.Deserialize<Order>(value);
             return new GetOrderResponse
             {
                 OrderId = order.OrderId,
@@ -68,20 +68,20 @@ namespace Kurier.RedisStorage
 
         public async Task<OrderUpdatedEvent> UpdateOrderStatus(UpdateOrderStatusRequest request)
         {
-            var key = GetOrderKey(request.OrderId);
-            var value = await _db.StringGetAsync(key);
+            string key = GetOrderKey(request.OrderId);
+            RedisValue value = await _db.StringGetAsync(key);
 
             if (value.IsNullOrEmpty)
             {
                 throw new KeyNotFoundException($"Order with ID {request.OrderId} not found.");
             }
 
-            var order = JsonSerializer.Deserialize<Order>(value);
+            Order order = JsonSerializer.Deserialize<Order>(value);
 
             order.Status = request.Status;
             order.LastUpdate = DateTime.Now;
 
-            var updatedValue = JsonSerializer.Serialize(order);
+            string updatedValue = JsonSerializer.Serialize(order);
             await _db.StringSetAsync(key, updatedValue);
 
             return new OrderUpdatedEvent

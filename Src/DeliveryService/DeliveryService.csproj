@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\RedisStorage\RedisStorage.csproj" />
   </ItemGroup>
 
 </Project>

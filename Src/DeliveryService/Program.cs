@@ -1,7 +1,9 @@
 using Kurier.Common.Interfaces;
 using Kurier.Common.Kafka;
 using Kurier.DeliveryService.Kafka;
+using Kurier.RedisStorage;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 
 namespace Kurier.DeliveryService
 {
@@ -20,7 +22,9 @@ namespace Kurier.DeliveryService
 
             builder.Services.AddKafka<KafkaConsumerHandler>(builder.Configuration);
 
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(builder.Configuration["Redis:ConnectionAddress"]));
             builder.Services.AddSingleton<IUserStorage, IUserStorage>(); // TODO: Заменить на реализацию
+            builder.Services.AddSingleton<IAuthTokenStorage, RedisAuthTokenStorage>();
 
             var app = builder.Build();
 

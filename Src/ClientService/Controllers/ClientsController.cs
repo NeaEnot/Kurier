@@ -9,10 +9,12 @@ namespace Kurier.ClientService.Controllers
     public class ClientsController : ControllerBase
     {
         private IUserStorage userStorage;
+        private IAuthTokenStorage authTokenStorage;
 
-        public ClientsController(IUserStorage clientStorage)
+        public ClientsController(IUserStorage clientStorage, IAuthTokenStorage authTokenStorage)
         {
             this.userStorage = clientStorage;
+            this.authTokenStorage = authTokenStorage;
         }
 
         [HttpPost]
@@ -38,19 +40,11 @@ namespace Kurier.ClientService.Controllers
             {
                 Guid clientId = await userStorage.Auth(request);
 
-                UserAuthToken token = new UserAuthToken
-                {
-                    TokenId = Guid.NewGuid(),
-                    UserId = clientId,
-                    EndTime = DateTime.Now.AddMinutes(20)
-                };
-
-                // STUB
-                // Записываем token в redis
+                UserAuthToken token = await authTokenStorage.CreateToken(clientId);
 
                 response = new AuthResponse
                 {
-                    TokenId = token.TokenId,
+                    Token = token,
                     Message = "Ok"
                 };
             }
@@ -59,7 +53,7 @@ namespace Kurier.ClientService.Controllers
             {
                 response = new AuthResponse
                 {
-                    TokenId = null,
+                    Token = null,
                     Message = ex.Message
                 };
             }
@@ -70,8 +64,9 @@ namespace Kurier.ClientService.Controllers
         [HttpGet]
         public async Task<NotificationsList> GetNotifications([FromBody] Guid tokenId)
         {
+            UserAuthToken token = await authTokenStorage.GetToken(tokenId);
+
             // STUB
-            // Получаем токен клиента
             // Получаем список уведомлений из Redis
             // Удаляем список уведомлений из Redis
 
