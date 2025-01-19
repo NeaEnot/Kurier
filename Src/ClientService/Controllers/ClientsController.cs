@@ -62,6 +62,34 @@ namespace Kurier.ClientService.Controllers
         }
 
         [HttpGet]
+        public async Task<ClientInfoResponse> GetClientInfo(Guid tokenId)
+        {
+            ClientInfoResponse response;
+
+            try
+            {
+                UserAuthToken token = await authTokenStorage.GetToken(tokenId);
+
+                response = new ClientInfoResponse
+                {
+                    ClientId = token.UserId,
+                    Message = "Ok"
+                };
+            }
+            catch
+            (Exception ex)
+            {
+                response = new ClientInfoResponse
+                {
+                    ClientId = null,
+                    Message = ex.Message
+                };
+            }
+
+            return response;
+        }
+
+        [HttpGet]
         public async Task<NotificationsList> GetNotifications([FromBody] Guid tokenId)
         {
             UserAuthToken token = await authTokenStorage.GetToken(tokenId);

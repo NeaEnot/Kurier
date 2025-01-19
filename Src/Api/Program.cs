@@ -1,6 +1,6 @@
-using Microsoft.Extensions.Configuration;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using Ocelot.Provider.Polly;
 
 namespace Kurier.Api
 {
@@ -13,7 +13,7 @@ namespace Kurier.Api
             builder.Configuration.AddJsonFile("ocelot.json");
 
             builder.Services.AddControllers();
-            builder.Services.AddOcelot();
+            builder.Services.AddOcelot().AddPolly();
             builder.Services.AddSwaggerForOcelot(builder.Configuration);
             builder.Services.AddSwaggerGen();
             builder.Services.AddHttpClient();

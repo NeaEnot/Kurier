@@ -30,9 +30,9 @@ namespace Kurier.DeliveryService.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateStatus([FromBody] UpdateOrderStatusRequest request, [FromBody] Guid courierTokenId)
+        public async Task<IActionResult> UpdateStatus([FromBody] UpdateOrderStatusRequest request)
         {
-            UserAuthToken token = await authTokenStorage.GetToken(courierTokenId);
+            UserAuthToken token = await authTokenStorage.GetToken(request.CourierTokenId);
 
             // STUB
             // Проверяем, что изменяет статус тот курьер, который назначен на заказ

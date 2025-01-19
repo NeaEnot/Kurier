@@ -19,7 +19,7 @@ namespace Kurier.RedisStorage
             _db = _redis.GetDatabase();
         }
 
-        public async Task<Guid> CreateOrder(CreateOrderRequest request)
+        public async Task<Guid> CreateOrder(CreateOrderInStorageRequest request)
         {
             Guid orderId = Guid.NewGuid();
             Order order = new Order
