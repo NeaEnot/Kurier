@@ -1,3 +1,4 @@
+using Kurier.Api.Middlewares;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Polly;
@@ -28,10 +29,8 @@ namespace Kurier.Api
                 }).UseOcelot().Wait();
             }
 
+            app.UseMiddleware<AuthServiceMiddleware>();
             app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
             app.MapControllers();
 
             app.Run();

@@ -30,10 +30,10 @@ namespace Kurier.OrderService.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
         {
-            ClientInfoResponse clientResponse = await GetClientInfo(request.ClientTokenId);
+            UserAuthToken clientResponse = await GetClientInfo(request.ClientTokenId);
             CreateOrderInStorageRequest storageRequest = new CreateOrderInStorageRequest
             {
-                ClientId = clientResponse.ClientId.Value,
+                ClientId = clientResponse.UserId,
                 DepartureAddress = request.DepartureAddress,
                 DeliveryAddress = request.DeliveryAddress,
                 Weight = request.Weight
@@ -68,10 +68,10 @@ namespace Kurier.OrderService.Controllers
         [HttpGet]
         public async Task<IActionResult> CancelOrder(CancelOrderRequest request)
         {
-            ClientInfoResponse clientResponse = await GetClientInfo(request.ClientTokenId);
+            UserAuthToken clientResponse = await GetClientInfo(request.ClientTokenId);
             GetOrderResponse order = await orderStorage.GetOrderById(request.OrderId);
 
-            if (order == null || order.ClientId != clientResponse.ClientId)
+            if (order == null || order.ClientId != clientResponse.UserId)
             {
                 return NotFound();
             }
@@ -84,7 +84,7 @@ namespace Kurier.OrderService.Controllers
             return Ok();
         }
 
-        private async Task<ClientInfoResponse> GetClientInfo(Guid clientTokenId)
+        private async Task<UserAuthToken> GetClientInfo(Guid clientTokenId)
         {
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"/api/clients/GetClientInfo?tokenId={clientTokenId}");
 
@@ -95,7 +95,7 @@ namespace Kurier.OrderService.Controllers
                 throw new Exception(content);
             }
 
-            return JsonConvert.DeserializeObject<ClientInfoResponse>(content);
+            return JsonConvert.DeserializeObject<UserAuthToken>(content);
         }
     }
 }
