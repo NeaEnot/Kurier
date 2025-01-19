@@ -1,4 +1,4 @@
-﻿namespace Kurier.Common.Models
+﻿namespace Kurier.Common.Models.Events
 {
     public class OrderCreatedEvent
     {

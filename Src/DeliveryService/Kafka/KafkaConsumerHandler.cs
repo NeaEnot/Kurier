@@ -1,7 +1,7 @@
 ﻿using Confluent.Kafka;
 using Kurier.Common;
 using Kurier.Common.Kafka;
-using Kurier.Common.Models;
+using Kurier.Common.Models.Events;
 using System.Text.Json;
 
 namespace Kurier.DeliveryService.Kafka

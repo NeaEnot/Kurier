@@ -1,4 +1,5 @@
 ﻿using Kurier.Common.Models;
+using Kurier.Common.Models.Events;
 
 namespace Kurier.Common.Interfaces
 {

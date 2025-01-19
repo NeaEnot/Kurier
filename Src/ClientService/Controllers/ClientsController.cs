@@ -32,61 +32,19 @@ namespace Kurier.ClientService.Controllers
         }
 
         [HttpPost]
-        public async Task<AuthResponse> Auth([FromBody] UserRequest request)
+        public async Task<UserAuthToken> Auth([FromBody] UserRequest request)
         {
-            AuthResponse response;
+            Guid clientId = await userStorage.Auth(request);
+            UserAuthToken token = await authTokenStorage.CreateToken(clientId);
 
-            try
-            {
-                Guid clientId = await userStorage.Auth(request);
-
-                UserAuthToken token = await authTokenStorage.CreateToken(clientId);
-
-                response = new AuthResponse
-                {
-                    Token = token,
-                    Message = "Ok"
-                };
-            }
-            catch
-            (Exception ex)
-            {
-                response = new AuthResponse
-                {
-                    Token = null,
-                    Message = ex.Message
-                };
-            }
-
-            return response;
+            return token;
         }
 
         [HttpGet]
-        public async Task<ClientInfoResponse> GetClientInfo(Guid tokenId)
+        public async Task<UserAuthToken> GetClientInfo(Guid tokenId)
         {
-            ClientInfoResponse response;
-
-            try
-            {
-                UserAuthToken token = await authTokenStorage.GetToken(tokenId);
-
-                response = new ClientInfoResponse
-                {
-                    ClientId = token.UserId,
-                    Message = "Ok"
-                };
-            }
-            catch
-            (Exception ex)
-            {
-                response = new ClientInfoResponse
-                {
-                    ClientId = null,
-                    Message = ex.Message
-                };
-            }
-
-            return response;
+            UserAuthToken token = await authTokenStorage.GetToken(tokenId);
+            return token;
         }
 
         [HttpGet]

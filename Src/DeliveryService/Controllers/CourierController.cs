@@ -32,33 +32,12 @@ namespace Kurier.DeliveryService.Controllers
         }
 
         [HttpPost]
-        public async Task<AuthResponse> Auth([FromBody] UserRequest request)
+        public async Task<UserAuthToken> Auth([FromBody] UserRequest request)
         {
-            AuthResponse response;
+            Guid courierId = await userStorage.Auth(request);
+            UserAuthToken token = await authTokenStorage.CreateToken(courierId);
 
-            try
-            {
-                Guid courierId = await userStorage.Auth(request);
-
-                UserAuthToken token = await authTokenStorage.CreateToken(courierId);
-
-                response = new AuthResponse
-                {
-                    Token = token,
-                    Message = "Ok"
-                };
-            }
-            catch
-            (Exception ex)
-            {
-                response = new AuthResponse
-                {
-                    Token = null,
-                    Message = ex.Message
-                };
-            }
-
-            return response;
+            return token;
         }
     }
 }

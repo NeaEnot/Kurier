@@ -2,6 +2,7 @@
 using Kurier.Common.Interfaces;
 using Kurier.Common.Kafka;
 using Kurier.Common.Models;
+using Kurier.Common.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kurier.DeliveryService.Controllers
