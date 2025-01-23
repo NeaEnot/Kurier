@@ -1,6 +1,6 @@
 ﻿using Kurier.Common.Enums;
 
-namespace Kurier.Common.Models
+namespace Kurier.Common.Models.Responses
 {
     public class GetOrderResponse
     {

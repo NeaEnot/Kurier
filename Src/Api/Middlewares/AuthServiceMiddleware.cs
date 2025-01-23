@@ -1,14 +1,18 @@
-﻿namespace Kurier.Api.Middlewares
+﻿using Kurier.Common.Models;
+
+namespace Kurier.Api.Middlewares
 {
     public class AuthServiceMiddleware
     {
-        private readonly RequestDelegate _next;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly RequestDelegate next;
+        private readonly IHttpClientFactory httpClientFactory;
+        private readonly IConfiguration configuration;
 
-        public AuthServiceMiddleware(RequestDelegate next, IHttpClientFactory httpClientFactory)
+        public AuthServiceMiddleware(RequestDelegate next, IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
-            _next = next;
-            _httpClientFactory = httpClientFactory;
+            this.next = next;
+            this.httpClientFactory = httpClientFactory;
+            this.configuration = configuration;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -20,25 +24,23 @@
                 return;
             }
 
-            var token = authHeader.ToString().Split(" ").Last();
-            var client = _httpClientFactory.CreateClient();
+            string tokenId = authHeader.ToString().Split(" ").Last();
+            HttpClient client = httpClientFactory.CreateClient();
 
             try
             {
-                // STUB
-                // Запрос к сервису клиента/курьера ИЛИ к единому сервису пользователей на валидацию токена
+                string url = configuration["UserValidateUrl"];
+                HttpResponseMessage response = await client.PostAsJsonAsync(url, tokenId);
 
-                //var response = await client.PostAsJsonAsync("http://auth-service:5000/api/auth/validate", token);
+                if (!response.IsSuccessStatusCode)
+                {
+                    context.Response.StatusCode = 401; // Unauthorized
+                    await context.Response.WriteAsync("Invalid or expired token.");
+                    return;
+                }
 
-                //if (!response.IsSuccessStatusCode)
-                //{
-                //    context.Response.StatusCode = 401; // Unauthorized
-                //    await context.Response.WriteAsync("Invalid or expired token.");
-                //    return;
-                //}
-
-                //var validateResponse = await response.Content.ReadFromJsonAsync<ValidateTokenResponse>();
-                //context.Items["UserId"] = validateResponse.ClientId;
+                UserAuthToken token = await response.Content.ReadFromJsonAsync<UserAuthToken>();
+                context.Items["UserToken"] = token;
             }
             catch (Exception ex)
             {
@@ -47,7 +49,7 @@
                 return;
             }
 
-            await _next(context);
+            await next(context);
         }
     }
 }

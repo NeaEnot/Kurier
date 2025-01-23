@@ -53,6 +53,24 @@
         "DurationOfBreak": 30000,
         "TimeoutValue": 10000
       }
+    },
+    {
+      "DownstreamPathTemplate": "/api/users/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 49153
+        }
+      ],
+      "SwaggerKey": "users",
+      "UpstreamPathTemplate": "/api/users/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 30000,
+        "TimeoutValue": 10000
+      }
     }
   ],
   "SwaggerEndPoints": [
@@ -83,6 +101,16 @@
           "Name": "Clients API",
           "Version": "v1",
           "Url": "https://localhost:7059/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "users",
+      "Config": [
+        {
+          "Name": "Users API",
+          "Version": "v1",
+          "Url": "https://localhost:49153/swagger/v1/swagger.json"
         }
       ]
     }

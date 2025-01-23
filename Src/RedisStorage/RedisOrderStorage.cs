@@ -2,6 +2,7 @@
 using Kurier.Common.Interfaces;
 using Kurier.Common.Models;
 using Kurier.Common.Models.Events;
+using Kurier.Common.Models.Responses;
 using StackExchange.Redis;
 using System.Text.Json;
 
