@@ -1,12 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kurier.Common.Enums
+﻿namespace Kurier.Common.Enums
 {
-    internal class UserPermissions
+    [Flags]
+    public enum UserPermissions
     {
+        None = 0,
+        CreateOwnOrder = 1,
+        CancelOwnOrder = 2,
+        GetOwnOrder = 4,
+        AssignSelfToDelivery = 8,
+        UpdateOwnDeliveryStatus = 16,
+        CreateOthersOrder = 32,
+        CancelOthersOrder = 64,
+        GetOthersOrder = 128,
+        AssignOthersToDelivery = 256,
+        UpdateOthersDeliveryStatus = 512,
+        All = ~0
     }
 }

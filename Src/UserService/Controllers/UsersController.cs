@@ -1,4 +1,6 @@
-﻿using Kurier.Common.Interfaces;
+﻿using Kurier.Common.Enums;
+using Kurier.Common;
+using Kurier.Common.Interfaces;
 using Kurier.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,6 +50,7 @@ namespace UserService.Controllers
         }
 
         [HttpGet]
+        [RequireAuthAndPermissions(UserPermissions.None)]
         public async Task<NotificationsList> GetNotifications([FromBody] Guid tokenId)
         {
             UserAuthToken token = await authTokenStorage.GetToken(tokenId);

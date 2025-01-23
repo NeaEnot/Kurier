@@ -1,4 +1,5 @@
-﻿using Kurier.Common.Interfaces;
+﻿using Kurier.Common.Enums;
+using Kurier.Common.Interfaces;
 using Kurier.Common.Models;
 using StackExchange.Redis;
 using System.Text.Json;
@@ -22,6 +23,7 @@ namespace Kurier.RedisStorage
             {
                 TokenId = Guid.NewGuid(),
                 UserId = userId,
+                Permissions = UserPermissions.All,
                 EndTime = DateTime.Now.AddMinutes(20)
             };
 

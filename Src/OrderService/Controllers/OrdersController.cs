@@ -28,6 +28,7 @@ namespace Kurier.OrderService.Controllers
         }
 
         [HttpPost]
+        [RequireAuthAndPermissions(UserPermissions.CreateOwnOrder | UserPermissions.CreateOthersOrder)]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
         {
             UserAuthToken clientResponse = await GetClientInfo(request.ClientTokenId);
@@ -55,6 +56,7 @@ namespace Kurier.OrderService.Controllers
         }
 
         [HttpPost]
+        [RequireAuthAndPermissions(UserPermissions.GetOwnOrder | UserPermissions.GetOthersOrder)]
         public async Task<IActionResult> GetOrderById(Guid orderId)
         {
             var order = await orderStorage.GetOrderById(orderId);
@@ -66,6 +68,7 @@ namespace Kurier.OrderService.Controllers
         }
 
         [HttpGet]
+        [RequireAuthAndPermissions(UserPermissions.CancelOwnOrder | UserPermissions.CancelOthersOrder)]
         public async Task<IActionResult> CancelOrder(CancelOrderRequest request)
         {
             UserAuthToken clientResponse = await GetClientInfo(request.ClientTokenId);
@@ -86,7 +89,7 @@ namespace Kurier.OrderService.Controllers
 
         private async Task<UserAuthToken> GetClientInfo(Guid clientTokenId)
         {
-            var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"/api/clients/GetClientInfo?tokenId={clientTokenId}");
+            var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"/api/users/GetUserInfo?tokenId={clientTokenId}");
 
             HttpResponseMessage httpResponse = await httpClient.SendAsync(httpRequest);
             string content = await httpResponse.Content.ReadAsStringAsync();

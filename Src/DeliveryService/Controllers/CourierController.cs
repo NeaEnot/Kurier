@@ -11,9 +11,9 @@ namespace Kurier.DeliveryService.Controllers
         private IUserStorage userStorage;
         private IAuthTokenStorage authTokenStorage;
 
-        public CourierController(IUserStorage clientStorage, IAuthTokenStorage authTokenStorage)
+        public CourierController(IUserStorage userStorage, IAuthTokenStorage authTokenStorage)
         {
-            this.userStorage = clientStorage;
+            this.userStorage = userStorage;
             this.authTokenStorage = authTokenStorage;
         }
 

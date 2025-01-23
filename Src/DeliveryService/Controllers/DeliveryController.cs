@@ -1,4 +1,5 @@
 ﻿using Kurier.Common;
+using Kurier.Common.Enums;
 using Kurier.Common.Interfaces;
 using Kurier.Common.Kafka;
 using Kurier.Common.Models;
@@ -21,6 +22,7 @@ namespace Kurier.DeliveryService.Controllers
         }
 
         [HttpPost]
+        [RequireAuthAndPermissions(UserPermissions.AssignSelfToDelivery | UserPermissions.AssignOthersToDelivery)]
         public async Task<IActionResult> AssignCourierForDelivery([FromBody] AssignDeliveryRequest request)
         {
             // STUB
@@ -31,6 +33,7 @@ namespace Kurier.DeliveryService.Controllers
         }
 
         [HttpPost]
+        [RequireAuthAndPermissions(UserPermissions.UpdateOwnDeliveryStatus | UserPermissions.UpdateOthersDeliveryStatus)]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateOrderStatusRequest request)
         {
             UserAuthToken token = await authTokenStorage.GetToken(request.CourierTokenId);
