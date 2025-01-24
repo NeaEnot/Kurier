@@ -21,10 +21,11 @@ namespace Kurier.Api.Middlewares
             {
                 string tokenId = authHeader.ToString().Split(" ").Last();
                 HttpClient client = httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.Add("X-Api-Key", configuration["UserValidation:Key"]);
 
                 try
                 {
-                    string url = configuration["UserValidateUrl"];
+                    string url = configuration["UserValidation:Url"];
                     HttpResponseMessage response = await client.PostAsJsonAsync(url, tokenId);
 
                     if (!response.IsSuccessStatusCode)

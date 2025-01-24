@@ -3,7 +3,7 @@ using Kurier.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Kurier.Common
+namespace Kurier.Common.Attributes
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
     public class RequireAuthAndPermissionsAttribute : Attribute, IAuthorizationFilter

@@ -1,4 +1,5 @@
 ﻿using Kurier.Common;
+using Kurier.Common.Attributes;
 using Kurier.Common.Enums;
 using Kurier.Common.Interfaces;
 using Kurier.Common.Kafka;
@@ -8,7 +9,6 @@ using Kurier.Common.Models.Requests;
 using Kurier.Common.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Net.Http;
 
 namespace Kurier.OrderService.Controllers
 {

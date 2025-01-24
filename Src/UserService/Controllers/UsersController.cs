@@ -1,8 +1,9 @@
 ﻿using Kurier.Common.Enums;
-using Kurier.Common;
 using Kurier.Common.Interfaces;
 using Kurier.Common.Models;
 using Microsoft.AspNetCore.Mvc;
+using Kurier.Common.Attributes;
+using UserService.Attributes;
 
 namespace UserService.Controllers
 {
@@ -43,6 +44,7 @@ namespace UserService.Controllers
         }
 
         [HttpGet]
+        [TrustedKeys]
         public async Task<UserAuthToken> GetUserInfo(Guid tokenId)
         {
             UserAuthToken token = await authTokenStorage.GetToken(tokenId);
