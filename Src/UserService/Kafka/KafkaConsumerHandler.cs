@@ -9,32 +9,27 @@ namespace UserService.Kafka
 {
     public class KafkaConsumerHandler : AbstactKafkaConsumerHandler
     {
-        public KafkaConsumerHandler(IConsumer<string, string> kafkaConsumer) : base(kafkaConsumer) { }
+        private readonly INotificationsStorage notificationsStorage;
 
-        protected override string[] Topics => new string[] { Constants.Topics.OrderUpdatedEvents, Constants.Topics.OrderCanceledEvents };
-
-        protected override Task HandleMessage(string message, string topic)
+        public KafkaConsumerHandler(IConsumer<string, string> kafkaConsumer, INotificationsStorage notificationsStorage) : base(kafkaConsumer)
         {
-            switch (topic)
-            {
-                case Constants.Topics.OrderUpdatedEvents:
-                    OrderUpdatedEvent evt = JsonSerializer.Deserialize<OrderUpdatedEvent>(message);
+            this.notificationsStorage = notificationsStorage;
+        }
 
-                    // STUB
-                    // Получаем из Redis NotificationsList по evt.ClientId
-                    // если null, то:
-                    NotificationsList notificationsList = new NotificationsList { ClientId = evt.ClientId };
-                    notificationsList.Add($"Заказ {evt.OrderId} переведён в статус {evt.NewStatus}");
-                    // сохраняем в Redis
-                    break;
-                case Constants.Topics.OrderCanceledEvents:
-                    Guid orderId = JsonSerializer.Deserialize<Guid>(message);
-                    Console.WriteLine($"Получено сообщение об отмене заказа: {orderId}");
-                    // STUB
-                    break;
-            }
+        protected override string[] Topics => new string[] { Constants.Topics.OrderUpdatedEvents };
 
-            return null;
+        protected override async Task HandleMessage(string message, string topic)
+        {
+            OrderUpdatedEvent evt = JsonSerializer.Deserialize<OrderUpdatedEvent>(message);
+
+            NotificationsList notificationsList = await notificationsStorage.GetNotificationsList(evt.ClientId);
+
+            if (notificationsList == null)
+                notificationsList = new NotificationsList { UserId = evt.ClientId };
+
+            notificationsList.Add($"Заказ {evt.OrderId} переведён в статус {evt.NewStatus}");
+
+            notificationsStorage.SaveNotificationsList(notificationsList);
         }
     }
 }

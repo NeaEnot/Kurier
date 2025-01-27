@@ -80,9 +80,10 @@ namespace Kurier.OrderService.Controllers
             }
 
             UpdateOrderStatusRequest storageRequest = new UpdateOrderStatusRequest { OrderId = request.OrderId, Status = OrderStatus.Canceled };
-            await orderStorage.UpdateOrderStatus(storageRequest);
+            OrderUpdatedEvent evt = await orderStorage.UpdateOrderStatus(storageRequest);
 
-            await kafkaProducer.PublishEventAsync(Constants.Topics.OrderCanceledEvents, request.OrderId.ToString(), request.OrderId);
+            kafkaProducer.PublishEventAsync(Constants.Topics.OrderCanceledEvents, request.OrderId.ToString(), request.OrderId);
+            kafkaProducer.PublishEventAsync(Constants.Topics.OrderUpdatedEvents, evt.OrderId.ToString(), evt);
 
             return Ok();
         }

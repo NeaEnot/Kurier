@@ -10,7 +10,7 @@ namespace Kurier.DeliveryService.Kafka
     {
         public KafkaConsumerHandler(IConsumer<string, string> kafkaConsumer) : base(kafkaConsumer) { }
 
-        protected override string[] Topics => new string[] { Constants.Topics.OrderCreatedEvents, Constants.Topics.OrderCanceledEvents };
+        protected override string[] Topics => new string[] { Constants.Topics.OrderCreatedEvents };
 
         protected override Task HandleMessage(string message, string topic)
         {
