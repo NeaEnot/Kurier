@@ -2,9 +2,10 @@
 
 namespace Kurier.Common.Models
 {
-    public class UpdateOrderStatusRequest
+    public class OrderDelivery
     {
         public Guid OrderId { get; set; }
+        public Guid? CourierId { get; set; }
         public OrderStatus Status { get; set; }
     }
 }

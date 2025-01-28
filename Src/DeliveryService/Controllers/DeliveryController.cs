@@ -14,21 +14,21 @@ namespace Kurier.DeliveryService.Controllers
     public class DeliveryController : ControllerBase
     {
         private readonly KafkaProducerHandler kafkaProducer;
-        private IAuthTokenStorage authTokenStorage;
+        private readonly IDeliveryStorage deliveryStorage;
 
-        public DeliveryController(KafkaProducerHandler kafkaProducer, IAuthTokenStorage authTokenStorage)
+        public DeliveryController(KafkaProducerHandler kafkaProducer, IDeliveryStorage deliveryStorage)
         {
             this.kafkaProducer = kafkaProducer;
-            this.authTokenStorage = authTokenStorage;
+            this.deliveryStorage = deliveryStorage;
         }
 
         [HttpPost]
         [RequireAuthAndPermissions(UserPermissions.AssignSelfToDelivery | UserPermissions.AssignOthersToDelivery)]
         public async Task<IActionResult> AssignCourierForDelivery([FromBody] AssignDeliveryRequest request)
         {
-            // STUB
-            // Записываем в Redis что курьер связан с заказом
-            // Может быть отправить через kafka сообщение клиенту о назначении курьера
+            OrderDelivery delivery = await deliveryStorage.GetDeliveryById(request.OrderId);
+            delivery.CourierId = request.CourierId;
+            deliveryStorage.UpdateDelivery(delivery);
 
             return Ok();
         }
@@ -37,12 +37,19 @@ namespace Kurier.DeliveryService.Controllers
         [RequireAuthAndPermissions(UserPermissions.UpdateOwnDeliveryStatus | UserPermissions.UpdateOthersDeliveryStatus)]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateOrderStatusRequest request)
         {
-            UserAuthToken token = await authTokenStorage.GetToken(request.CourierTokenId);
+            HttpContext.Items.TryGetValue("UserToken", out var userAuthTokenObj);
+            UserAuthToken token = userAuthTokenObj as UserAuthToken;
 
-            // STUB
-            // Проверяем, что изменяет статус тот курьер, который назначен на заказ
+            OrderDelivery delivery = await deliveryStorage.GetDeliveryById(request.OrderId);
+            if (delivery.CourierId != token.UserId)
+            {
+                return Forbid();
+            }
 
-            await kafkaProducer.PublishEventAsync(Constants.Topics.OrderStatus, request.OrderId.ToString(), request);
+            delivery.Status = request.Status;
+
+            deliveryStorage.UpdateDelivery(delivery);
+            kafkaProducer.PublishEventAsync(Constants.Topics.OrderStatus, request.OrderId.ToString(), request);
 
             return Ok();
         }

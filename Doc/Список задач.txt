@@ -42,3 +42,4 @@ Middleware с заглушкой для авторизации через ApiGat
 Защита UsersController.GetUserInfo с помощью ключа
 Добавлено хранилище для уведомлений в Redis
 Убрано чтение топика на отмену заказа везде кроме DeliveryService
+Интерфейс хранилища для DeliveryService
