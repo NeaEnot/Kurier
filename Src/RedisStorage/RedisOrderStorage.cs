@@ -12,13 +12,13 @@ namespace Kurier.RedisStorage
 {
     public class RedisOrderStorage : IOrderStorage
     {
-        private readonly IConnectionMultiplexer _redis;
-        private readonly IDatabase _db;
+        private readonly IConnectionMultiplexer redis;
+        private readonly IDatabase db;
 
         public RedisOrderStorage(IConnectionMultiplexer redis)
         {
-            _redis = redis;
-            _db = _redis.GetDatabase();
+            this.redis = redis;
+            db = this.redis.GetDatabase();
         }
 
         public async Task<Guid> CreateOrder(CreateOrderInStorageRequest request)
@@ -39,7 +39,7 @@ namespace Kurier.RedisStorage
             string key = GetOrderKey(orderId);
             string value = JsonSerializer.Serialize(order);
 
-            await _db.StringSetAsync(key, value);
+            db.StringSetAsync(key, value);
 
             return orderId;
         }
@@ -47,7 +47,7 @@ namespace Kurier.RedisStorage
         public async Task<GetOrderResponse> GetOrderById(Guid id)
         {
             string key = GetOrderKey(id);
-            RedisValue value = await _db.StringGetAsync(key);
+            RedisValue value = await db.StringGetAsync(key);
 
             if (value.IsNullOrEmpty)
             {
@@ -71,7 +71,7 @@ namespace Kurier.RedisStorage
         public async Task<OrderUpdatedEvent> UpdateOrderStatus(UpdateOrderStatusRequest request)
         {
             string key = GetOrderKey(request.OrderId);
-            RedisValue value = await _db.StringGetAsync(key);
+            RedisValue value = await db.StringGetAsync(key);
 
             if (value.IsNullOrEmpty)
             {
@@ -84,7 +84,7 @@ namespace Kurier.RedisStorage
             order.LastUpdate = DateTime.Now;
 
             string updatedValue = JsonSerializer.Serialize(order);
-            await _db.StringSetAsync(key, updatedValue);
+            db.StringSetAsync(key, updatedValue);
 
             return new OrderUpdatedEvent
             {

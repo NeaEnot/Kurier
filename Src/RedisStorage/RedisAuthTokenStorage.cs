@@ -30,7 +30,7 @@ namespace Kurier.RedisStorage
             string key = GetTokenKey(token.TokenId);
             string value = JsonSerializer.Serialize(token);
 
-            await _db.StringSetAsync(key, value);
+            _db.StringSetAsync(key, value);
             DeleteTokenByTime(key, token.EndTime);
 
             return token;
