@@ -23,7 +23,7 @@ namespace Kurier.Common.Attributes
                 return;
             }
 
-            if (requiredPermissions > UserPermissions.None && !userAuthToken.Permissions.Contains(requiredPermissions))
+            if (requiredPermissions > UserPermissions.None && !userAuthToken.Permissions.ContainsAny(requiredPermissions))
             {
                 context.Result = new ForbidResult();
             }

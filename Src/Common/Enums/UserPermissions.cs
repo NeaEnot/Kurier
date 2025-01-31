@@ -14,6 +14,8 @@
         GetOthersOrder = 128,
         AssignOthersToDelivery = 256,
         UpdateOthersDeliveryStatus = 512,
+        CreateCouriers = 1024,
+        CreateManagers = 2048,
         All = ~0
     }
 }

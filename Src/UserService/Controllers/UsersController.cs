@@ -4,6 +4,9 @@ using Kurier.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using Kurier.Common.Attributes;
 using UserService.Attributes;
+using Kurier.Common.Models.Requests;
+
+using UP = Kurier.Common.Enums.UserPermissions;
 
 namespace UserService.Controllers
 {
@@ -15,6 +18,12 @@ namespace UserService.Controllers
         private readonly INotificationsStorage notificationsStorage;
         private readonly IAuthTokenStorage authTokenStorage;
 
+        private static UP courierPermissions = UP.AssignSelfToDelivery | UP.UpdateOwnDeliveryStatus;
+        private static UP managerPermissions =
+            UP.CreateOthersOrder | UP.CancelOthersOrder | UP.GetOthersOrder |
+            UP.AssignOthersToDelivery | UP.UpdateOthersDeliveryStatus |
+            UP.CreateCouriers | UP.CreateManagers;
+
         public UsersController(IUserStorage userStorage, INotificationsStorage notificationsStorage, IAuthTokenStorage authTokenStorage)
         {
             this.userStorage = userStorage;
@@ -23,21 +32,27 @@ namespace UserService.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] UserRequest request)
+        public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
         {
-            try
+            HttpContext.Items.TryGetValue("UserToken", out var userAuthTokenObj);
+            UserAuthToken token = userAuthTokenObj != null ? userAuthTokenObj as UserAuthToken : null;
+
+            if (request.Permissions.ContainsAny(courierPermissions) && (token == null || !token.Permissions.ContainsAll(UP.CreateCouriers)))
             {
-                await userStorage.Register(request);
-                return Ok();
+                return Forbid();
             }
-            catch (Exception ex)
+
+            if (request.Permissions.ContainsAny(managerPermissions) && (token == null || !token.Permissions.ContainsAll(UP.CreateManagers)))
             {
-                return BadRequest(ex.Message);
+                return Forbid();
             }
+
+            await userStorage.Register(request);
+            return Ok();
         }
 
         [HttpPost]
-        public async Task<UserAuthToken> Auth([FromBody] UserRequest request)
+        public async Task<UserAuthToken> Auth([FromBody] UserAuthRequest request)
         {
             Guid clientId = await userStorage.Auth(request);
             UserAuthToken token = await authTokenStorage.CreateToken(clientId);

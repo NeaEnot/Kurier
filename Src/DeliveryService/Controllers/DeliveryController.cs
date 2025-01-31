@@ -73,7 +73,7 @@ namespace Kurier.DeliveryService.Controllers
         {
             UserAuthToken token = GetUserToken();
 
-            return courierId == token.UserId || token.Permissions.Contains(permissions);
+            return courierId == token.UserId || token.Permissions.ContainsAll(permissions);
         }
 
         private UserAuthToken GetUserToken()

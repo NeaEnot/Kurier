@@ -1,5 +1,6 @@
 ﻿using Kurier.Common.Interfaces;
 using Kurier.Common.Models;
+using Kurier.Common.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kurier.DeliveryService.Controllers
@@ -18,7 +19,7 @@ namespace Kurier.DeliveryService.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] UserRequest request)
+        public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
         {
             try
             {
@@ -32,7 +33,7 @@ namespace Kurier.DeliveryService.Controllers
         }
 
         [HttpPost]
-        public async Task<UserAuthToken> Auth([FromBody] UserRequest request)
+        public async Task<UserAuthToken> Auth([FromBody] UserAuthRequest request)
         {
             Guid courierId = await userStorage.Auth(request);
             UserAuthToken token = await authTokenStorage.CreateToken(courierId);

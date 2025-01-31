@@ -1,5 +1,5 @@
-﻿using Kurier.Common.Models;
-using Kurier.Common.Models.Events;
+﻿using Kurier.Common.Models.Events;
+using Kurier.Common.Models.Requests;
 using Kurier.Common.Models.Responses;
 
 namespace Kurier.Common.Interfaces
