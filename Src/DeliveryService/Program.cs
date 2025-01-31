@@ -24,7 +24,7 @@ namespace Kurier.DeliveryService
 
             builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(builder.Configuration["Redis:ConnectionAddress"]));
             //builder.Services.AddSingleton<IUserStorage, IUserStorage>(); // TODO: Заменить на реализацию
-            //builder.Services.AddSingleton<IDeliveryStorage, IDeliveryStorage>(); // TODO: Заменить на реализацию
+            builder.Services.AddSingleton<IDeliveryStorage, RedisDeliveryStorage>();
             builder.Services.AddSingleton<IAuthTokenStorage, RedisAuthTokenStorage>();
 
             var app = builder.Build();

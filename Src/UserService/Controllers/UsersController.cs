@@ -11,12 +11,14 @@ namespace UserService.Controllers
     [Route("api/[controller]/[action]")]
     public class UsersController : ControllerBase
     {
-        private IUserStorage userStorage;
-        private IAuthTokenStorage authTokenStorage;
+        private readonly IUserStorage userStorage;
+        private readonly INotificationsStorage notificationsStorage;
+        private readonly IAuthTokenStorage authTokenStorage;
 
-        public UsersController(IUserStorage userStorage, IAuthTokenStorage authTokenStorage)
+        public UsersController(IUserStorage userStorage, INotificationsStorage notificationsStorage, IAuthTokenStorage authTokenStorage)
         {
             this.userStorage = userStorage;
+            this.notificationsStorage = notificationsStorage;
             this.authTokenStorage = authTokenStorage;
         }
 
@@ -53,15 +55,15 @@ namespace UserService.Controllers
 
         [HttpGet]
         [RequireAuthAndPermissions(UserPermissions.None)]
-        public async Task<NotificationsList> GetNotifications([FromBody] Guid tokenId)
+        public async Task<NotificationsList> GetNotifications()
         {
-            UserAuthToken token = await authTokenStorage.GetToken(tokenId);
+            HttpContext.Items.TryGetValue("UserToken", out var userAuthTokenObj);
+            UserAuthToken token = userAuthTokenObj as UserAuthToken;
 
-            // STUB
-            // Получаем список уведомлений из Redis
-            // Удаляем список уведомлений из Redis
+            NotificationsList notifications = await notificationsStorage.GetNotificationsList(token.UserId);
+            await notificationsStorage.DeleteNotificationsList(token.UserId);
 
-            return null;
+            return notifications;
         }
     }
 }

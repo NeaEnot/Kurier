@@ -22,10 +22,28 @@ namespace Kurier.DeliveryService.Controllers
             this.deliveryStorage = deliveryStorage;
         }
 
+        [HttpGet]
+        [RequireAuthAndPermissions(UserPermissions.AssignSelfToDelivery | UserPermissions.AssignOthersToDelivery)]
+        public async Task<IActionResult> GetDeliveriesForCourier(Guid? courierId)
+        {
+            if (courierId != null && !CanActionWithDelivery(courierId.Value, UserPermissions.AssignOthersToDelivery))
+            {
+                return Forbid();
+            }
+
+            List<OrderDelivery> deliveries = await deliveryStorage.GetDeliveriesForCourier(courierId);
+            return Ok(deliveries);
+        }
+
         [HttpPost]
         [RequireAuthAndPermissions(UserPermissions.AssignSelfToDelivery | UserPermissions.AssignOthersToDelivery)]
         public async Task<IActionResult> AssignCourierForDelivery([FromBody] AssignDeliveryRequest request)
         {
+            if (!CanActionWithDelivery(request.CourierId, UserPermissions.AssignOthersToDelivery))
+            {
+                return Forbid();
+            }
+
             OrderDelivery delivery = await deliveryStorage.GetDeliveryById(request.OrderId);
             delivery.CourierId = request.CourierId;
             deliveryStorage.UpdateDelivery(delivery);
@@ -37,11 +55,8 @@ namespace Kurier.DeliveryService.Controllers
         [RequireAuthAndPermissions(UserPermissions.UpdateOwnDeliveryStatus | UserPermissions.UpdateOthersDeliveryStatus)]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateOrderStatusRequest request)
         {
-            HttpContext.Items.TryGetValue("UserToken", out var userAuthTokenObj);
-            UserAuthToken token = userAuthTokenObj as UserAuthToken;
-
             OrderDelivery delivery = await deliveryStorage.GetDeliveryById(request.OrderId);
-            if (delivery.CourierId != token.UserId)
+            if (!CanActionWithDelivery(delivery.CourierId.Value, UserPermissions.UpdateOthersDeliveryStatus))
             {
                 return Forbid();
             }
@@ -52,6 +67,20 @@ namespace Kurier.DeliveryService.Controllers
             kafkaProducer.PublishEventAsync(Constants.Topics.OrderStatus, request.OrderId.ToString(), request);
 
             return Ok();
+        }
+
+        private bool CanActionWithDelivery(Guid courierId, UserPermissions permissions)
+        {
+            UserAuthToken token = GetUserToken();
+
+            return courierId == token.UserId || token.Permissions.Contains(permissions);
+        }
+
+        private UserAuthToken GetUserToken()
+        {
+            HttpContext.Items.TryGetValue("UserToken", out var userAuthTokenObj);
+            UserAuthToken token = userAuthTokenObj as UserAuthToken;
+            return token;
         }
     }
 }
