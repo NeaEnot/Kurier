@@ -1,7 +1,9 @@
 using Kurier.Api.Middlewares;
+using Kurier.Common.Interfaces;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Polly;
+//using InfrastructureDB.Data.Seed;
 
 namespace Kurier.Api
 {
@@ -27,6 +29,20 @@ namespace Kurier.Api
                 app.UseSwaggerForOcelotUI(opt => {
                     opt.PathToSwaggerGenerator = "/swagger/docs";
                 }).UseOcelot().Wait();
+            }
+            using (var scope = app.Services.CreateScope())
+            {
+                var logger = scope.ServiceProvider.GetRequiredService<IApplicationLogger<Program>>();
+
+                try
+                {
+                    //KurierContextSeed.SeedAsync(builder.Configuration, scope);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, $"Error in <{nameof(Program)}>");
+                    throw;
+                }
             }
 
             app.UseMiddleware<AuthServiceMiddleware>();
