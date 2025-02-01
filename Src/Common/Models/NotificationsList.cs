@@ -2,6 +2,6 @@
 {
     public class NotificationsList : List<string>
     {
-        public Guid ClientId { get; set; }
+        public Guid UserId { get; set; }
     }
 }

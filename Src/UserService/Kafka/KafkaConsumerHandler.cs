@@ -4,6 +4,7 @@ using Kurier.Common.Models.Events;
 using Kurier.Common.Models;
 using System.Text.Json;
 using Kurier.Common;
+using Kurier.Common.Interfaces;
 
 namespace UserService.Kafka
 {

@@ -1,5 +1,6 @@
 ﻿using Confluent.Kafka;
 using Kurier.Common;
+using Kurier.Common.Interfaces;
 using Kurier.Common.Kafka;
 using Kurier.Common.Models;
 using Kurier.Common.Models.Events;
@@ -9,7 +10,7 @@ namespace Kurier.ClientService.Kafka
 {
     public class KafkaConsumerHandler : AbstactKafkaConsumerHandler
     {
-        public KafkaConsumerHandler(IConsumer<string, string> kafkaConsumer) : base(kafkaConsumer) { }
+        private readonly INotificationsStorage notificationsStorage;
 
         public KafkaConsumerHandler(IConsumer<string, string> kafkaConsumer, INotificationsStorage notificationsStorage) : base(kafkaConsumer)
         {
@@ -18,7 +19,7 @@ namespace Kurier.ClientService.Kafka
 
         protected override string[] Topics => new string[] { Constants.Topics.OrderUpdatedEvents };
 
-        protected override Task HandleMessage(string message, string topic)
+        protected async override Task HandleMessage(string message, string topic)
         {
             OrderUpdatedEvent evt = JsonSerializer.Deserialize<OrderUpdatedEvent>(message);
 

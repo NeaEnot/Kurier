@@ -7,13 +7,13 @@ namespace Kurier.RedisStorage
 {
     public class RedisNotificationsStorage : INotificationsStorage
     {
-        private readonly IConnectionMultiplexer _redis;
-        private readonly IDatabase _db;
+        private readonly IConnectionMultiplexer redis;
+        private readonly IDatabase db;
 
         public RedisNotificationsStorage(IConnectionMultiplexer redis)
         {
-            _redis = redis;
-            _db = _redis.GetDatabase();
+            this.redis = redis;
+            db = redis.GetDatabase();
         }
 
         public async Task SaveNotificationsList(NotificationsList notificationsList)
@@ -21,13 +21,13 @@ namespace Kurier.RedisStorage
             string key = GetNotificationsKey(notificationsList.UserId);
             string value = JsonSerializer.Serialize(notificationsList);
 
-            await _db.StringSetAsync(key, value);
+            await db.StringSetAsync(key, value);
         }
 
         public async Task<NotificationsList> GetNotificationsList(Guid userId)
         {
             string key = GetNotificationsKey(userId);
-            RedisValue value = await _db.StringGetAsync(key);
+            RedisValue value = await db.StringGetAsync(key);
 
             if (value.IsNullOrEmpty)
             {
@@ -41,7 +41,7 @@ namespace Kurier.RedisStorage
         public async Task DeleteNotificationsList(Guid userId)
         {
             string key = GetNotificationsKey(userId);
-            _db.KeyDeleteAsync(key);
+            db.KeyDeleteAsync(key);
         }
 
         private string GetNotificationsKey(Guid userId) => $"user:{userId}";
