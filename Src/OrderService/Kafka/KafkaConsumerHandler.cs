@@ -2,8 +2,8 @@
 using Kurier.Common;
 using Kurier.Common.Interfaces;
 using Kurier.Common.Kafka;
-using Kurier.Common.Models;
 using Kurier.Common.Models.Events;
+using Kurier.Common.Models.Requests;
 using System.Text.Json;
 
 namespace Kurier.OrderService.Kafka
