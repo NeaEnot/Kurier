@@ -6,8 +6,6 @@ using Kurier.Common.Attributes;
 using UserService.Attributes;
 using Kurier.Common.Models.Requests;
 
-using UP = Kurier.Common.Enums.UserPermissions;
-
 namespace UserService.Controllers
 {
     [ApiController]
@@ -18,17 +16,11 @@ namespace UserService.Controllers
         private readonly INotificationsStorage notificationsStorage;
         private readonly IAuthTokenStorage authTokenStorage;
 
-        private static UP courierPermissions = UP.AssignSelfToDelivery | UP.UpdateOwnDeliveryStatus;
-        private static UP managerPermissions =
-            UP.CreateOthersOrder | UP.CancelOthersOrder | UP.GetOthersOrder |
-            UP.AssignOthersToDelivery | UP.UpdateOthersDeliveryStatus |
-            UP.CreateCouriers | UP.CreateManagers;
-
-        private readonly Dictionary<UserRole, UP> permissions = new Dictionary<UserRole, UP>
+        private readonly Dictionary<UserRole, UserPermissions> permissions = new Dictionary<UserRole, UserPermissions>
         {
-            { UserRole.Client, UP.CreateOwnOrder | UP.CancelOwnOrder | UP.GetOwnOrder },
-            { UserRole.Courier, courierPermissions },
-            { UserRole.Manager, managerPermissions }
+            { UserRole.Client, UserPermissions.Client },
+            { UserRole.Courier, UserPermissions.Courier },
+            { UserRole.Manager, UserPermissions.Manager }
         };
 
         public UsersController(IUserStorage userStorage, INotificationsStorage notificationsStorage, IAuthTokenStorage authTokenStorage)
@@ -44,12 +36,12 @@ namespace UserService.Controllers
             HttpContext.Items.TryGetValue("UserToken", out var userAuthTokenObj);
             UserAuthToken token = userAuthTokenObj != null ? userAuthTokenObj as UserAuthToken : null;
 
-            if (request.Role == UserRole.Courier && (token == null || !token.Permissions.ContainsAll(UP.CreateCouriers)))
+            if (request.Role == UserRole.Courier && (token == null || !token.Permissions.ContainsAll(UserPermissions.CreateCouriers)))
             {
                 return Forbid();
             }
 
-            if (request.Role == UserRole.Manager && (token == null || !token.Permissions.ContainsAll(UP.CreateManagers)))
+            if (request.Role == UserRole.Manager && (token == null || !token.Permissions.ContainsAll(UserPermissions.CreateManagers)))
             {
                 return Forbid();
             }
@@ -66,12 +58,12 @@ namespace UserService.Controllers
         }
 
         [HttpPost]
-        public async Task<UserAuthToken> Auth([FromBody] UserAuthRequest request)
+        public async Task<Guid> Auth([FromBody] UserAuthRequest request)
         {
             Guid clientId = await userStorage.Auth(request);
             UserAuthToken token = await authTokenStorage.CreateToken(clientId);
 
-            return token;
+            return token.TokenId;
         }
 
         [HttpGet]

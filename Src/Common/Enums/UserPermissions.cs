@@ -3,7 +3,6 @@
     [Flags]
     public enum UserPermissions
     {
-        None = 0,
         CreateOwnOrder = 1,
         CancelOwnOrder = 2,
         GetOwnOrder = 4,
@@ -16,6 +15,12 @@
         UpdateOthersDeliveryStatus = 512,
         CreateCouriers = 1024,
         CreateManagers = 2048,
-        All = ~0
+
+        None = 0,
+        All = ~0,
+
+        Client = CreateOwnOrder | CancelOwnOrder | GetOwnOrder,
+        Courier = AssignSelfToDelivery | UpdateOwnDeliveryStatus,
+        Manager = CreateOthersOrder | CancelOthersOrder | GetOthersOrder | AssignOthersToDelivery | UpdateOthersDeliveryStatus | CreateCouriers | CreateManagers,
     }
 }

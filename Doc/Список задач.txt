@@ -45,3 +45,4 @@ Middleware с заглушкой для авторизации через ApiGat
 Интерфейс хранилища для DeliveryService
 Реализация RedisDeliveryStorage
 Небольшие доработки для DeliveryService
+Кэш для курьеров, работающих в настоящее время

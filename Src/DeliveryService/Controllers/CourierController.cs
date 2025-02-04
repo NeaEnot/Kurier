@@ -1,6 +1,7 @@
-﻿using Kurier.Common.Interfaces;
+﻿using Kurier.Common.Attributes;
+using Kurier.Common.Enums;
+using Kurier.Common.Interfaces;
 using Kurier.Common.Models;
-using Kurier.Common.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kurier.DeliveryService.Controllers
@@ -9,35 +10,48 @@ namespace Kurier.DeliveryService.Controllers
     [Route("api/[controller]/[action]")]
     public class CourierController : ControllerBase
     {
-        private IUserStorage userStorage;
-        private IAuthTokenStorage authTokenStorage;
+        private readonly ICourierStorage courierStorage;
 
-        public CourierController(IUserStorage userStorage, IAuthTokenStorage authTokenStorage)
+        public CourierController(ICourierStorage courierStorage)
         {
-            this.userStorage = userStorage;
-            this.authTokenStorage = authTokenStorage;
+            this.courierStorage = courierStorage;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
+        [RequireAuthAndPermissions(UserPermissions.Courier)]
+        public async Task<IActionResult> StartWork()
         {
-            try
-            {
-                await userStorage.Register(request);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            UserAuthToken token = GetUserToken();
+
+            courierStorage.AddCourier(token.UserId);
+
+            return Ok();
         }
 
         [HttpPost]
-        public async Task<UserAuthToken> Auth([FromBody] UserAuthRequest request)
+        [RequireAuthAndPermissions(UserPermissions.Courier)]
+        public async Task<IActionResult> EndWork()
         {
-            Guid courierId = await userStorage.Auth(request);
-            UserAuthToken token = await authTokenStorage.CreateToken(courierId);
+            UserAuthToken token = GetUserToken();
 
+            courierStorage.DeleteCourier(token.UserId);
+
+            return Ok();
+        }
+
+        [HttpGet]
+        [RequireAuthAndPermissions(UserPermissions.Manager)]
+        public async Task<IActionResult> GetWorkedCouriers()
+        {
+            List<Guid> couriers = courierStorage.GetCouriers();
+
+            return Ok(couriers);
+        }
+
+        private UserAuthToken GetUserToken()
+        {
+            HttpContext.Items.TryGetValue("UserToken", out var userAuthTokenObj);
+            UserAuthToken token = userAuthTokenObj as UserAuthToken;
             return token;
         }
     }
