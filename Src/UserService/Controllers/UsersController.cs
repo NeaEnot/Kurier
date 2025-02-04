@@ -24,6 +24,13 @@ namespace UserService.Controllers
             UP.AssignOthersToDelivery | UP.UpdateOthersDeliveryStatus |
             UP.CreateCouriers | UP.CreateManagers;
 
+        private readonly Dictionary<UserRole, UP> permissions = new Dictionary<UserRole, UP>
+        {
+            { UserRole.Client, UP.CreateOwnOrder | UP.CancelOwnOrder | UP.GetOwnOrder },
+            { UserRole.Courier, courierPermissions },
+            { UserRole.Manager, managerPermissions }
+        };
+
         public UsersController(IUserStorage userStorage, INotificationsStorage notificationsStorage, IAuthTokenStorage authTokenStorage)
         {
             this.userStorage = userStorage;
@@ -37,17 +44,24 @@ namespace UserService.Controllers
             HttpContext.Items.TryGetValue("UserToken", out var userAuthTokenObj);
             UserAuthToken token = userAuthTokenObj != null ? userAuthTokenObj as UserAuthToken : null;
 
-            if (request.Permissions.ContainsAny(courierPermissions) && (token == null || !token.Permissions.ContainsAll(UP.CreateCouriers)))
+            if (request.Role == UserRole.Courier && (token == null || !token.Permissions.ContainsAll(UP.CreateCouriers)))
             {
                 return Forbid();
             }
 
-            if (request.Permissions.ContainsAny(managerPermissions) && (token == null || !token.Permissions.ContainsAll(UP.CreateManagers)))
+            if (request.Role == UserRole.Manager && (token == null || !token.Permissions.ContainsAll(UP.CreateManagers)))
             {
                 return Forbid();
             }
 
-            await userStorage.Register(request);
+            UserRegisterInStorageRequest requestInStorage = new UserRegisterInStorageRequest
+            {
+                Login = request.Login,
+                Password = request.Password,
+                Permissions = permissions[request.Role]
+            };
+
+            await userStorage.Register(requestInStorage);
             return Ok();
         }
 

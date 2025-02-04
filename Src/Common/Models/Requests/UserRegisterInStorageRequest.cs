@@ -2,10 +2,10 @@
 
 namespace Kurier.Common.Models.Requests
 {
-    public class UserRegisterRequest
+    public class UserRegisterInStorageRequest
     {
         public string Login { get; set; }
         public string Password { get; set; }
-        public UserRole Role { get; set; }
+        public UserPermissions Permissions { get; set; }
     }
 }
