@@ -1,8 +1,68 @@
 {
   "Orders": [
-
+    {
+      "Id": "56a302e2-675a-45ab-ae0e-535e2f36ee0f",
+      "DepartureAddress": "шоссе Ленина, д. 93, кв. 10",
+      "DeliveryAddress": "пр. 1905 года, д. 92, кв. 83",
+      "Weight": 4.0,
+      "Status": 0,
+      "Created": "2025-02-07T20:35:10.4896107+04:00",
+      "LastUpdate": "2025-02-07T20:35:10.4908626+04:00",
+      "UserId": "224d30a8-c2a1-4c5e-b84d-0e018ce67a7d"
+    },
+    {
+      "Id": "f8e666d8-0f7f-4c56-b575-d5fc30bfeb39",
+      "DepartureAddress": "пл. Сталина, д. 62, кв. 49",
+      "DeliveryAddress": "наб. Бухарестская, д. 11, кв. 35",
+      "Weight": 10.0,
+      "Status": 0,
+      "Created": "2025-02-07T20:35:10.4909974+04:00",
+      "LastUpdate": "2025-02-07T20:35:10.4909977+04:00",
+      "UserId": "bf36603a-5b14-4b1b-bae4-e9a59c8d9dbd"
+    }
   ],
   "Users": [
-
+    {
+      "Id": "5b09eec7-452b-4b0d-875f-472d8f3babd1",
+      "Name": "Екатерина Григорьева",
+      "Email": "ekat.grig@kurier.ru",
+      "Password": "5tgbwdsaf093",
+      "Permissions": 4064
+    },
+    {
+      "Id": "0af2685a-16d7-4842-9d40-397e9166dd53",
+      "Name": "Адам Николаев",
+      "Email": "adam.nick@kurier.ru",
+      "Password": "ds;ljkfhatfgil34",
+      "Permissions": 24
+    },
+    {
+      "Id": "9a78b69e-8049-4daf-9a99-8398b58791ef",
+      "Name": "Матвей Токарев",
+      "Email": "matveytokarev@kurier.ru",
+      "Password": "pikjsr7e8ftg2w4r",
+      "Permissions": 24
+    },
+    {
+      "Id": "28c02b6f-a4fd-41f2-b0e9-a0bfa0bbf7af",
+      "Name": "Илья Богданов",
+      "Email": "ilya_bog@mail.ru",
+      "Password": ",lsdafjk0982",
+      "Permissions": 7
+    },
+    {
+      "Id": "224d30a8-c2a1-4c5e-b84d-0e018ce67a7d",
+      "Name": "Дарина Николаева",
+      "Email": "nikolaeva.d.d@yandex.ru",
+      "Password": "kmvw8234r",
+      "Permissions": 7
+    },
+    {
+      "Id": "bf36603a-5b14-4b1b-bae4-e9a59c8d9dbd",
+      "Name": "Максим Смирнов",
+      "Email": "maxxmirno@google.com",
+      "Password": "mbge089yw=",
+      "Permissions": 7
+    }
   ]
 }

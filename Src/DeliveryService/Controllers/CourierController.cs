@@ -43,7 +43,7 @@ namespace Kurier.DeliveryService.Controllers
         [RequireAuthAndPermissions(UserPermissions.Manager)]
         public async Task<IActionResult> GetWorkedCouriers()
         {
-            List<Guid> couriers = courierStorage.GetCouriers();
+            List<Guid> couriers = await courierStorage.GetCouriers();
 
             return Ok(couriers);
         }

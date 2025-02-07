@@ -23,7 +23,7 @@ namespace Kurier.ClientService.Controllers
         {
             try
             {
-                await userStorage.Register(request);
+                //await userStorage.Register(request);
                 return Ok();
             }
             catch (Exception ex)
