@@ -31,7 +31,7 @@ namespace Kurier.OrderService.Controllers
         [RequireAuthAndPermissions(UserPermissions.CreateOwnOrder | UserPermissions.CreateOthersOrder)]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
         {
-            UserAuthToken clientResponse = await GetClientInfo(request.ClientTokenId);
+            UserAuthToken clientResponse = await GetClientInfo(request.ClientTokenId); // TODO: переделать логику, чтобы и менеджер мог создать заказ для пользователя
             CreateOrderInStorageRequest storageRequest = new CreateOrderInStorageRequest
             {
                 ClientId = clientResponse.UserId,
