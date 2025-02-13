@@ -40,7 +40,7 @@ namespace Kurier.DeliveryService.Controllers
         }
 
         [HttpGet]
-        [RequireAuthAndPermissions(UserPermissions.Manager)]
+        [RequireAuthAndPermissions(UserPermissions.AssignOthersToDelivery | UserPermissions.UpdateOthersDeliveryStatus)]
         public async Task<IActionResult> GetWorkedCouriers()
         {
             List<Guid> couriers = await courierStorage.GetCouriers();
