@@ -1,0 +1,23 @@
+{
+  "Routes": [
+    {
+      "Path": "/api/orders",
+      "DownstreamUrl": "http://localhost:7110/api/orders",
+      "SwaggerUrl": "http://localhost:7110/swagger/v1/swagger.json"
+    },
+    {
+      "Path": "/api/delivery",
+      "DownstreamUrl": "http://localhost:7148/api/delivery",
+      "SwaggerUrl": "http://localhost:7148/swagger/v1/swagger.json"
+    },
+    {
+      "Path": "/api/users",
+      "DownstreamUrl": "http://localhost:49153/api/users",
+      "SwaggerUrl": "http://localhost:49153/swagger/v1/swagger.json"
+    }
+  ],
+  "CircuitBreaker": {
+    "MaxFailures": 3,
+    "BreakDuration": 30
+  }
+}
