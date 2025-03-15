@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\CustomGateway\CustomGateway.csproj" />
     <ProjectReference Include="..\InfrastructureDB\InfrastructureDB.csproj" />
   </ItemGroup>
 
