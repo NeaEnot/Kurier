@@ -95,16 +95,6 @@
       ]
     },
     {
-      "Key": "clients",
-      "Config": [
-        {
-          "Name": "Clients API",
-          "Version": "v1",
-          "Url": "https://localhost:7059/swagger/v1/swagger.json"
-        }
-      ]
-    },
-    {
       "Key": "users",
       "Config": [
         {

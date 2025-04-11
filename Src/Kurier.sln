@@ -13,15 +13,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedisStorage", "RedisStorag
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliveryService", "DeliveryService\DeliveryService.csproj", "{9958EB12-C466-448A-AE9A-9A4EFEE0F03E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientService", "ClientService\ClientService.csproj", "{6B3D9F33-C3C2-4CBD-BE96-BDA08A0E088F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{B9F5F95C-C1C3-4B9E-BB43-1899A80574EC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Storage", "Storage", "{83854ECE-8013-4426-A6B6-8A999D1C4AB9}"
+	ProjectSection(SolutionItems) = preProject
+		RedisStorage\RedisCourierStorage.cs = RedisStorage\RedisCourierStorage.cs
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService", "UserService\UserService.csproj", "{08EE6187-19A2-4C5C-802F-8619B63E440F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService", "UserService\UserService.csproj", "{08EE6187-19A2-4C5C-802F-8619B63E440F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfrastructureDB", "InfrastructureDB\InfrastructureDB.csproj", "{47AB4DD6-7B80-4871-9AF6-8FD3DBE05FD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InfrastructureDB", "InfrastructureDB\InfrastructureDB.csproj", "{47AB4DD6-7B80-4871-9AF6-8FD3DBE05FD0}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{F2020AC5-C6A6-4DAE-B3FF-01AE0ACDAA08}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,10 +52,6 @@ Global
 		{9958EB12-C466-448A-AE9A-9A4EFEE0F03E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9958EB12-C466-448A-AE9A-9A4EFEE0F03E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9958EB12-C466-448A-AE9A-9A4EFEE0F03E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6B3D9F33-C3C2-4CBD-BE96-BDA08A0E088F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6B3D9F33-C3C2-4CBD-BE96-BDA08A0E088F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6B3D9F33-C3C2-4CBD-BE96-BDA08A0E088F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6B3D9F33-C3C2-4CBD-BE96-BDA08A0E088F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{08EE6187-19A2-4C5C-802F-8619B63E440F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{08EE6187-19A2-4C5C-802F-8619B63E440F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08EE6187-19A2-4C5C-802F-8619B63E440F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -61,6 +60,10 @@ Global
 		{47AB4DD6-7B80-4871-9AF6-8FD3DBE05FD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47AB4DD6-7B80-4871-9AF6-8FD3DBE05FD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47AB4DD6-7B80-4871-9AF6-8FD3DBE05FD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2020AC5-C6A6-4DAE-B3FF-01AE0ACDAA08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2020AC5-C6A6-4DAE-B3FF-01AE0ACDAA08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2020AC5-C6A6-4DAE-B3FF-01AE0ACDAA08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2020AC5-C6A6-4DAE-B3FF-01AE0ACDAA08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,7 +72,6 @@ Global
 		{2B859C2E-3BCD-45B4-9B1F-EA3CB3AD4347} = {B9F5F95C-C1C3-4B9E-BB43-1899A80574EC}
 		{D8B7CB5B-90BD-403E-92C2-F02663E26273} = {83854ECE-8013-4426-A6B6-8A999D1C4AB9}
 		{9958EB12-C466-448A-AE9A-9A4EFEE0F03E} = {B9F5F95C-C1C3-4B9E-BB43-1899A80574EC}
-		{6B3D9F33-C3C2-4CBD-BE96-BDA08A0E088F} = {B9F5F95C-C1C3-4B9E-BB43-1899A80574EC}
 		{08EE6187-19A2-4C5C-802F-8619B63E440F} = {B9F5F95C-C1C3-4B9E-BB43-1899A80574EC}
 		{47AB4DD6-7B80-4871-9AF6-8FD3DBE05FD0} = {83854ECE-8013-4426-A6B6-8A999D1C4AB9}
 	EndGlobalSection

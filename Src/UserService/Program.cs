@@ -1,7 +1,9 @@
+using Kurier.Common.ApiConfiguration;
 using Kurier.Common.Interfaces;
 using Kurier.Common.Kafka;
 using Kurier.RedisStorage;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using StackExchange.Redis;
 using UserService.Kafka;
 
@@ -13,6 +15,8 @@ namespace UserService
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.ConfigureLogging();
+
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -22,9 +26,20 @@ namespace UserService
 
             builder.Services.AddKafka<KafkaConsumerHandler>(builder.Configuration);
 
-            builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(builder.Configuration["Redis:ConnectionAddress"]));
+            var configurationOptions = new ConfigurationOptions
+            {
+                EndPoints = { builder.Configuration["Redis:ConnectionAddress"] ?? "127.0.0.1:6379" },
+                ConnectTimeout = 5000, // Время ожидания в миллисекундах
+                SyncTimeout = 5000,     // Таймаут синхронных операций
+                AbortOnConnectFail = false
+            };
+
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(configurationOptions));
             //builder.Services.AddSingleton<IUserStorage, IUserStorage>(); // TODO: Заменить на реализацию
             builder.Services.AddSingleton<IAuthTokenStorage, RedisAuthTokenStorage>();
+            builder.Services.AddSingleton<INotificationsStorage, RedisNotificationsStorage>();
+
+            builder.Host.UseSerilog();
 
             var app = builder.Build();
 

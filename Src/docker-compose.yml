@@ -1,0 +1,107 @@
+version: '3.4'
+
+networks:
+  apinet:
+    driver: bridge
+    name: apinet
+
+services:
+  deliveryservice:
+    image: ${DOCKER_REGISTRY-}deliveryservice
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    build:
+      context: .
+      dockerfile: DeliveryService/Dockerfile
+    depends_on:
+     - redis
+     - kafka
+     - postgres.db
+
+  orderservice:
+    image: ${DOCKER_REGISTRY-}orderservice
+    build:
+      context: .
+      dockerfile: OrderService/Dockerfile
+    depends_on:
+     - redis
+     - kafka
+     - postgres.db
+
+  userservice:
+    image: ${DOCKER_REGISTRY-}userservice
+    build:
+      context: .
+      dockerfile: UserService/Dockerfile
+    depends_on:
+     - redis
+     - kafka
+     - postgres.db
+
+  api:
+    image: ${DOCKER_REGISTRY-}api
+    build:
+      context: .
+      dockerfile: Api/Dockerfile
+    depends_on:
+     - postgres.db
+     - redis
+     - kafka
+ 
+  postgres.db:
+   container_name: postgres.db
+   image: postgres:12.9
+   environment:
+     POSTGRES_DB: "postgres_db"
+     POSTGRES_USER: "db_admin"
+     POSTGRES_PASSWORD: "12345"
+   ports:
+     - "5432:5432"
+   volumes:
+     - ./pgdata:/var/lib/postgresql/data 
+
+  zookeeper:
+    image: wurstmeister/zookeeper:3.4.6
+    ports:
+      - "2181:2181"
+
+  # kafka:
+  #   image: wurstmeister/kafka:latest
+  #   networks:
+  #       - apinet
+  #   ports:
+  #     - "9094:9094"
+  #   environment:
+  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  #     KAFKA_LISTENERS: INTERNAL://0.0.0.0:9094,OUTSIDE://0.0.0.0:9092
+  #     KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9094,OUTSIDE://localhost:9092
+  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,OUTSIDE:PLAINTEXT
+  #     KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  redis:
+    image: redis:latest
+    container_name: redis_container
+    restart: always
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--save 20 1", "--loglevel debug"]
+    volumes:
+      - ./data/redis:/data

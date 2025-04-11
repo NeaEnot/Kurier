@@ -3,6 +3,7 @@ using Kurier.Common.Interfaces;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Polly;
+using Serilog;
 //using InfrastructureDB.Data.Seed;
 
 namespace Kurier.Api
@@ -20,6 +21,7 @@ namespace Kurier.Api
             builder.Services.AddSwaggerForOcelot(builder.Configuration);
             builder.Services.AddSwaggerGen();
             builder.Services.AddHttpClient();
+            builder.Host.UseSerilog();
 
             var app = builder.Build();
 
@@ -32,17 +34,18 @@ namespace Kurier.Api
             }
             using (var scope = app.Services.CreateScope())
             {
-                var logger = scope.ServiceProvider.GetRequiredService<IApplicationLogger<Program>>();
+                //var logger = scope.ServiceProvider.GetRequiredService<IApplicationLogger<Program>>();
 
-                try
-                {
-                    //KurierContextSeed.SeedAsync(builder.Configuration, scope);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, $"Error in <{nameof(Program)}>");
-                    throw;
-                }
+                //try
+                //{
+                //    // TO DO: надо бы допилить сид дату, шобы в базу подгружались ТД автоматом
+                //    //KurierContextSeed.SeedAsync(builder.Configuration, scope);
+                //}
+                //catch (Exception ex)
+                //{
+                //    logger.LogError(ex, $"Error in <{nameof(Program)}>");
+                //    throw;
+                //}
             }
 
             app.UseMiddleware<AuthServiceMiddleware>();

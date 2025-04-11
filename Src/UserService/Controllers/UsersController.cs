@@ -10,11 +10,13 @@ namespace UserService.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    public class UsersController : ControllerBase
+    public class UsersController(IUserStorage userStorage, INotificationsStorage notificationsStorage,
+        IAuthTokenStorage authTokenStorage, ILogger<UsersController> logger) : ControllerBase
     {
-        private readonly IUserStorage userStorage;
-        private readonly INotificationsStorage notificationsStorage;
-        private readonly IAuthTokenStorage authTokenStorage;
+        private readonly IUserStorage _userStorage = userStorage;
+        private readonly INotificationsStorage _notificationsStorage = notificationsStorage;
+        private readonly IAuthTokenStorage _authTokenStorage = authTokenStorage;
+        private readonly ILogger<UsersController> _logger = logger;
 
         private readonly Dictionary<UserRole, UserPermissions> permissions = new Dictionary<UserRole, UserPermissions>
         {
@@ -22,13 +24,6 @@ namespace UserService.Controllers
             { UserRole.Courier, UserPermissions.Courier },
             { UserRole.Manager, UserPermissions.Manager }
         };
-
-        public UsersController(IUserStorage userStorage, INotificationsStorage notificationsStorage, IAuthTokenStorage authTokenStorage)
-        {
-            this.userStorage = userStorage;
-            this.notificationsStorage = notificationsStorage;
-            this.authTokenStorage = authTokenStorage;
-        }
 
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
@@ -48,20 +43,20 @@ namespace UserService.Controllers
 
             UserRegisterInStorageRequest requestInStorage = new UserRegisterInStorageRequest
             {
-                Login = request.Login,
+                Email = request.Login,
                 Password = request.Password,
                 Permissions = permissions[request.Role]
             };
 
-            await userStorage.Register(requestInStorage);
+            await _userStorage.Register(requestInStorage);
             return Ok();
         }
 
         [HttpPost]
         public async Task<Guid> Auth([FromBody] UserAuthRequest request)
         {
-            Guid clientId = await userStorage.Auth(request);
-            UserAuthToken token = await authTokenStorage.CreateToken(clientId);
+            Guid clientId = await _userStorage.Auth(request);
+            UserAuthToken token = await _authTokenStorage.CreateToken(clientId);
 
             return token.TokenId;
         }
@@ -70,7 +65,7 @@ namespace UserService.Controllers
         [TrustedKeys]
         public async Task<UserAuthToken> GetUserInfo(Guid tokenId)
         {
-            UserAuthToken token = await authTokenStorage.GetToken(tokenId);
+            UserAuthToken token = await _authTokenStorage.GetToken(tokenId);
             return token;
         }
 
@@ -81,8 +76,8 @@ namespace UserService.Controllers
             HttpContext.Items.TryGetValue("UserToken", out var userAuthTokenObj);
             UserAuthToken token = userAuthTokenObj as UserAuthToken;
 
-            NotificationsList notifications = await notificationsStorage.GetNotificationsList(token.UserId);
-            await notificationsStorage.DeleteNotificationsList(token.UserId);
+            NotificationsList notifications = await _notificationsStorage.GetNotificationsList(token.UserId);
+            await _notificationsStorage.DeleteNotificationsList(token.UserId);
 
             return notifications;
         }

@@ -1,9 +1,13 @@
+using Kurier.Common.ApiConfiguration;
 using Kurier.Common.Interfaces;
 using Kurier.Common.Kafka;
 using Kurier.OrderService.Kafka;
 using Kurier.RedisStorage;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using StackExchange.Redis;
+using InfrastructureDB.Storages;
+using InfrastructureDB.Data;
 
 namespace Kurier.OrderService
 {
@@ -12,6 +16,8 @@ namespace Kurier.OrderService
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.ConfigureLogging();
 
             // Add services to the container.
 
@@ -22,13 +28,15 @@ namespace Kurier.OrderService
 
             builder.Services.AddHttpClient("ApiGateway", client =>
             {
-                client.BaseAddress = new Uri(builder.Configuration["ApiGatewayUri"]);
+                client.BaseAddress = new Uri(builder.Configuration["ApiGatewayUri"] ?? "");
             });
+            builder.Services.AddSingleton<IOrderStorage, PostgresOrderStorage>();
+
+            builder.Services.AddDbServices(builder.Configuration);
 
             builder.Services.AddKafka<KafkaConsumerHandler>(builder.Configuration);
 
-            builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(builder.Configuration["Redis:ConnectionAddress"]));
-            builder.Services.AddSingleton<IOrderStorage, RedisOrderStorage>();
+            builder.Host.UseSerilog();
 
             var app = builder.Build();
 

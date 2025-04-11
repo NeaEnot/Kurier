@@ -11,27 +11,25 @@ namespace Kurier.DeliveryService.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    public class DeliveryController : ControllerBase
+    public class DeliveryController(KafkaProducerHandler kafkaProducer, IDeliveryStorage deliveryStorage, ILogger<DeliveryController> logger) : ControllerBase
     {
-        private readonly KafkaProducerHandler kafkaProducer;
-        private readonly IDeliveryStorage deliveryStorage;
-
-        public DeliveryController(KafkaProducerHandler kafkaProducer, IDeliveryStorage deliveryStorage)
-        {
-            this.kafkaProducer = kafkaProducer;
-            this.deliveryStorage = deliveryStorage;
-        }
+        private readonly KafkaProducerHandler kafkaProducer = kafkaProducer;
+        private readonly IDeliveryStorage _deliveryStorage = deliveryStorage;
+        private readonly ILogger<DeliveryController> _logger = logger;
 
         [HttpGet]
         [RequireAuthAndPermissions(UserPermissions.AssignSelfToDelivery | UserPermissions.AssignOthersToDelivery)]
         public async Task<IActionResult> GetDeliveriesForCourier(Guid? courierId)
         {
+
+            _logger.LogInformation($"GetDeliveriesForCourier request has been received. СourierId:{courierId}");
+
             if (courierId != null && !CanActionWithDelivery(courierId.Value, UserPermissions.AssignOthersToDelivery))
             {
                 return Forbid();
             }
 
-            List<OrderDelivery> deliveries = await deliveryStorage.GetDeliveriesForCourier(courierId);
+            List<OrderDelivery> deliveries = await _deliveryStorage.GetDeliveriesForCourier(courierId);
             return Ok(deliveries);
         }
 
@@ -39,14 +37,17 @@ namespace Kurier.DeliveryService.Controllers
         [RequireAuthAndPermissions(UserPermissions.AssignSelfToDelivery | UserPermissions.AssignOthersToDelivery)]
         public async Task<IActionResult> AssignCourierForDelivery([FromBody] AssignDeliveryRequest request)
         {
+
+            _logger.LogInformation($"AssignCourierForDelivery request has been received. Request:{request}");
+
             if (!CanActionWithDelivery(request.CourierId, UserPermissions.AssignOthersToDelivery))
             {
                 return Forbid();
             }
 
-            OrderDelivery delivery = await deliveryStorage.GetDeliveryById(request.OrderId);
+            OrderDelivery delivery = await _deliveryStorage.GetDeliveryById(request.OrderId);
             delivery.CourierId = request.CourierId;
-            deliveryStorage.UpdateDelivery(delivery);
+            _deliveryStorage.UpdateDelivery(delivery);
 
             return Ok();
         }
@@ -55,7 +56,10 @@ namespace Kurier.DeliveryService.Controllers
         [RequireAuthAndPermissions(UserPermissions.UpdateOwnDeliveryStatus | UserPermissions.UpdateOthersDeliveryStatus)]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateOrderStatusRequest request)
         {
-            OrderDelivery delivery = await deliveryStorage.GetDeliveryById(request.OrderId);
+
+            _logger.LogInformation($"UpdateStatus request has been received. Request:{request}");
+
+            OrderDelivery delivery = await _deliveryStorage.GetDeliveryById(request.OrderId);
             if (!CanActionWithDelivery(delivery.CourierId.Value, UserPermissions.UpdateOthersDeliveryStatus))
             {
                 return Forbid();
@@ -63,7 +67,7 @@ namespace Kurier.DeliveryService.Controllers
 
             delivery.Status = request.Status;
 
-            deliveryStorage.UpdateDelivery(delivery);
+            _deliveryStorage.UpdateDelivery(delivery);
             kafkaProducer.PublishEventAsync(Constants.Topics.OrderStatus, request.OrderId.ToString(), request);
 
             return Ok();

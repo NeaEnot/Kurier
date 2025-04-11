@@ -8,22 +8,21 @@ namespace Kurier.DeliveryService.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    public class CourierController : ControllerBase
+    public class CourierController(ICourierStorage courierStorage, ILogger<CourierController> logger) : ControllerBase
     {
-        private readonly ICourierStorage courierStorage;
-
-        public CourierController(ICourierStorage courierStorage)
-        {
-            this.courierStorage = courierStorage;
-        }
+        private readonly ICourierStorage _courierStorage = courierStorage;
+        private readonly ILogger<CourierController> _logger = logger;
 
         [HttpPost]
         [RequireAuthAndPermissions(UserPermissions.Courier)]
         public async Task<IActionResult> StartWork()
         {
+
+            _logger.LogDebug("Work has been started.");
+
             UserAuthToken token = GetUserToken();
 
-            courierStorage.AddCourier(token.UserId);
+            _courierStorage.AddCourier(token.UserId);
 
             return Ok();
         }
@@ -32,9 +31,12 @@ namespace Kurier.DeliveryService.Controllers
         [RequireAuthAndPermissions(UserPermissions.Courier)]
         public async Task<IActionResult> EndWork()
         {
+
+            _logger.LogDebug("Work has been ended.");
+
             UserAuthToken token = GetUserToken();
 
-            courierStorage.DeleteCourier(token.UserId);
+            _courierStorage.DeleteCourier(token.UserId);
 
             return Ok();
         }
@@ -43,7 +45,10 @@ namespace Kurier.DeliveryService.Controllers
         [RequireAuthAndPermissions(UserPermissions.AssignOthersToDelivery | UserPermissions.UpdateOthersDeliveryStatus)]
         public async Task<IActionResult> GetWorkedCouriers()
         {
-            List<Guid> couriers = await courierStorage.GetCouriers();
+
+            _logger.LogInformation("GetWorkedCouriers request has been received.");
+
+            List<Guid> couriers = await _courierStorage.GetCouriers();
 
             return Ok(couriers);
         }
