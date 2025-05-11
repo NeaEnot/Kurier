@@ -30,7 +30,7 @@ namespace Kurier.OrderService
             {
                 client.BaseAddress = new Uri(builder.Configuration["ApiGatewayUri"] ?? "");
             });
-            builder.Services.AddSingleton<IOrderStorage, PostgresOrderStorage>();
+            builder.Services.AddScoped<IOrderStorage, PostgresOrderStorage>();
 
             builder.Services.AddDbServices(builder.Configuration);
 

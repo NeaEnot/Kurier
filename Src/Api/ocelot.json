@@ -60,7 +60,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 49153
+          "Port": 7107
         }
       ],
       "SwaggerKey": "users",
@@ -100,7 +100,7 @@
         {
           "Name": "Users API",
           "Version": "v1",
-          "Url": "https://localhost:49153/swagger/v1/swagger.json"
+          "Url": "https://localhost:7107/swagger/v1/swagger.json"
         }
       ]
     }
