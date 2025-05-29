@@ -2,11 +2,11 @@
   "Routes": [
     {
       "DownstreamPathTemplate": "/api/orders/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7110
+          "Host": "orderservice",
+          "Port": 8020
         }
       ],
       "SwaggerKey": "orders",
@@ -20,11 +20,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/delivery/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7148
+          "Host": "deliveryservice",
+          "Port": 8030
         }
       ],
       "SwaggerKey": "delivery",
@@ -56,11 +56,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/users/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 7107
+          "Host": "userservice",
+          "Port": 8010
         }
       ],
       "SwaggerKey": "users",
@@ -80,7 +80,7 @@
         {
           "Name": "Orders API",
           "Version": "v1",
-          "Url": "https://localhost:7110/swagger/v1/swagger.json"
+          "Url": "http://orderservice:8020/swagger/v1/swagger.json"
         }
       ]
     },
@@ -90,7 +90,7 @@
         {
           "Name": "Delivery API",
           "Version": "v1",
-          "Url": "https://localhost:7148/swagger/v1/swagger.json"
+          "Url": "http://deliveryservice:8030/swagger/v1/swagger.json"
         }
       ]
     },
@@ -100,7 +100,7 @@
         {
           "Name": "Users API",
           "Version": "v1",
-          "Url": "https://localhost:7107/swagger/v1/swagger.json"
+          "Url": "http://userservice:8010/swagger/v1/swagger.json"
         }
       ]
     }

@@ -8,12 +8,20 @@ networks:
 services:
   deliveryservice:
     image: ${DOCKER_REGISTRY-}deliveryservice
-    environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
     build:
       context: .
       dockerfile: DeliveryService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8030
+      - ASPNETCORE_HTTPS_PORTS=8031
+      - REDIS_HOST=redis
+      - REDIS_POR=6379
+    ports:
+      - "8030:8030"
+      - "8031:8031"
+    networks:
+      - apinet
     depends_on:
      - redis
      - kafka
@@ -24,6 +32,15 @@ services:
     build:
       context: .
       dockerfile: OrderService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8020
+      - ASPNETCORE_HTTPS_PORTS=8021
+    ports:
+      - "8020:8020"
+      - "8021:8021"
+    networks:
+      - apinet
     depends_on:
      - redis
      - kafka
@@ -34,6 +51,15 @@ services:
     build:
       context: .
       dockerfile: UserService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8010
+      - ASPNETCORE_HTTPS_PORTS=8011
+    ports:
+      - "8010:8010"
+      - "8011:8011"
+    networks:
+      - apinet
     depends_on:
      - redis
      - kafka
@@ -44,6 +70,15 @@ services:
     build:
       context: .
       dockerfile: Api/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    networks:
+      - apinet
     depends_on:
      - postgres.db
      - redis
@@ -58,6 +93,8 @@ services:
      POSTGRES_PASSWORD: "12345"
    ports:
      - "5432:5432"
+   networks:
+      - apinet
    volumes:
      - ./pgdata:/var/lib/postgresql/data 
 
@@ -65,6 +102,8 @@ services:
     image: wurstmeister/zookeeper:3.4.6
     ports:
       - "2181:2181"
+    networks:
+      - apinet
 
   # kafka:
   #   image: wurstmeister/kafka:latest
@@ -88,6 +127,8 @@ services:
       - zookeeper
     ports:
       - "9092:9092"
+    networks:
+      - apinet
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -102,6 +143,8 @@ services:
     restart: always
     ports:
       - "6379:6379"
+    networks:
+      - apinet
     command: ["redis-server", "--save 20 1", "--loglevel debug"]
     volumes:
       - ./data/redis:/data
