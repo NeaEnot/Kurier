@@ -1,3 +1,5 @@
+using InfrastructureDB.Data;
+using InfrastructureDB.Storages;
 using Kurier.Common.ApiConfiguration;
 using Kurier.Common.Interfaces;
 using Kurier.Common.Kafka;
@@ -22,7 +24,34 @@ namespace UserService
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "User service", Version = "v1" }); });
+
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "User service", Version = "v1" });
+
+                c.AddSecurityDefinition("custom_auth", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    In = ParameterLocation.Header,
+                    Description = "GUID token, передаваемый в заголовке Authorization"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "custom_auth"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
 
             builder.Services.AddKafka<KafkaConsumerHandler>(builder.Configuration);
 
@@ -34,10 +63,22 @@ namespace UserService
                 AbortOnConnectFail = false
             };
 
+            builder.Services.AddDbServices(builder.Configuration);
             builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(configurationOptions));
-            //builder.Services.AddSingleton<IUserStorage, IUserStorage>(); // TODO: Заменить на реализацию
+            builder.Services.AddScoped<IUserStorage, PostgresUserStorage>();
             builder.Services.AddSingleton<IAuthTokenStorage, RedisAuthTokenStorage>();
             builder.Services.AddSingleton<INotificationsStorage, RedisNotificationsStorage>();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                {
+                    builder
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
 
             builder.Host.UseSerilog();
 
@@ -50,7 +91,9 @@ namespace UserService
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            app.UseCors("AllowAll");
+
+            //app.UseHttpsRedirection();
 
             app.UseAuthorization();
 

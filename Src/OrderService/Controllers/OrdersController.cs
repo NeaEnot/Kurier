@@ -1,4 +1,5 @@
-﻿using Kurier.Common;
+﻿using Confluent.Kafka;
+using Kurier.Common;
 using Kurier.Common.Attributes;
 using Kurier.Common.Enums;
 using Kurier.Common.Interfaces;
@@ -9,18 +10,21 @@ using Kurier.Common.Models.Requests;
 using Kurier.Common.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
+using System.Net.Http;
 
 namespace Kurier.OrderService.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
     public class OrdersController(IOrderStorage orderStorage, KafkaProducerHandler kafkaProducer,
-        IHttpClientFactory httpClientFactory, ILogger<OrdersController> logger) : ControllerBase
+        IHttpClientFactory httpClientFactory, ILogger<OrdersController> logger, IConfiguration configuration) : ControllerBase
     {
         private readonly IOrderStorage _orderStorage = orderStorage;
         private readonly KafkaProducerHandler _kafkaProducer = kafkaProducer;
         private readonly HttpClient httpClient = httpClientFactory.CreateClient("ApiGateway");
         private readonly ILogger<OrdersController> _logger = logger;
+        private readonly IConfiguration _configuration = configuration;
 
         [HttpPost]
         [RequireAuthAndPermissions(UserPermissions.CreateOwnOrder | UserPermissions.CreateOthersOrder)]
@@ -53,22 +57,26 @@ namespace Kurier.OrderService.Controllers
             return Ok(id);
         }
 
-        [HttpPost]
+        [HttpGet]
         [RequireAuthAndPermissions(UserPermissions.GetOwnOrder | UserPermissions.GetOthersOrder)]
-        public async Task<IActionResult> GetOrderById(Guid orderId)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<GetOrderResponse> GetOrderById(Guid orderId)
         {
 
             _logger.LogInformation($"GetOrderById request has been received. OrderId:{orderId}");
 
             var order = await _orderStorage.GetOrderById(orderId);
+
             if (order == null)
             {
-                return NotFound();
+                HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+                throw new Exception("Заказ не найден");
             }
-            return Ok(order);
+
+            return order;
         }
 
-        [HttpGet]
+        [HttpPost]
         [RequireAuthAndPermissions(UserPermissions.CancelOwnOrder | UserPermissions.CancelOthersOrder)]
         public async Task<IActionResult> CancelOrder(CancelOrderRequest request)
         {
@@ -94,9 +102,9 @@ namespace Kurier.OrderService.Controllers
 
         private async Task<UserAuthToken> GetClientInfo(Guid clientTokenId)
         {
-            var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"/api/users/GetUserInfo?tokenId={clientTokenId}");
+            httpClient.DefaultRequestHeaders.Add("X-Api-Key", _configuration["UserValidationKey"]);
 
-            HttpResponseMessage httpResponse = await httpClient.SendAsync(httpRequest);
+            HttpResponseMessage httpResponse = await httpClient.PostAsJsonAsync("/api/users/GetUserInfo", clientTokenId);
             string content = await httpResponse.Content.ReadAsStringAsync();
             if (!httpResponse.IsSuccessStatusCode)
             {

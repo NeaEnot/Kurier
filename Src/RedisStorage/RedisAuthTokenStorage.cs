@@ -17,13 +17,13 @@ namespace Kurier.RedisStorage
             _db = _redis.GetDatabase();
         }
 
-        public async Task<UserAuthToken> CreateToken(Guid userId)
+        public async Task<UserAuthToken> CreateToken(Guid userId, UserPermissions permissions)
         {
             UserAuthToken token = new UserAuthToken
             {
                 TokenId = Guid.NewGuid(),
                 UserId = userId,
-                Permissions = UserPermissions.All,
+                Permissions = permissions,
                 EndTime = DateTime.Now.AddMinutes(20)
             };
 

@@ -25,7 +25,34 @@ namespace Kurier.DeliveryService
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "Delivery service", Version = "v1" }); });
+
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Delivery service", Version = "v1" });
+
+                c.AddSecurityDefinition("custom_auth", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    In = ParameterLocation.Header,
+                    Description = "GUID token, передаваемый в заголовке Authorization"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "custom_auth"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
 
             builder.Services.AddKafka<KafkaConsumerHandler>(builder.Configuration);
             var configurationOptions = new ConfigurationOptions
@@ -40,6 +67,17 @@ namespace Kurier.DeliveryService
             builder.Services.AddSingleton<IDeliveryStorage, RedisDeliveryStorage>();
             builder.Services.AddSingleton<IAuthTokenStorage, RedisAuthTokenStorage>();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                {
+                    builder
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
             builder.AddOpenTelemetry();
 
             builder.Host.UseSerilog();
@@ -52,6 +90,8 @@ namespace Kurier.DeliveryService
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseCors("AllowAll");
 
             app.UseHttpsRedirection();
 

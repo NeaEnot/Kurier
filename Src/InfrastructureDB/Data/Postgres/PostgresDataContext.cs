@@ -23,7 +23,7 @@ namespace InfrastructureDB.Data.Postgres
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseNpgsql("User ID=postgres;Password=postgres;Server=localhost;Port=5433;Database=kurier");
+                optionsBuilder.UseNpgsql("User ID=db_admin;Password=12345;Server=localhost;Port=5431;Database=postgres_db");
             }
 
             optionsBuilder.LogTo(message => System.Diagnostics.Debug.WriteLine(message));
@@ -35,7 +35,7 @@ namespace InfrastructureDB.Data.Postgres
             modelBuilder.HasDefaultSchema(SchemaName);
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            //modelBuilder.SeedDataAsync();
+            modelBuilder.SeedDataAsync();
         }
     }
 }

@@ -1,10 +1,9 @@
 using Kurier.Api.Middlewares;
-using Kurier.Common.Interfaces;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Polly;
 using Serilog;
-//using InfrastructureDB.Data.Seed;
+using InfrastructureDB.Data;
 
 namespace Kurier.Api
 {
@@ -19,37 +18,40 @@ namespace Kurier.Api
             builder.Services.AddControllers();
             builder.Services.AddOcelot().AddPolly();
             builder.Services.AddSwaggerForOcelot(builder.Configuration);
+
             builder.Services.AddSwaggerGen();
+
             builder.Services.AddHttpClient();
+            builder.Services.AddDbServices(builder.Configuration);
             builder.Host.UseSerilog();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                {
+                    builder
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
             var app = builder.Build();
+
+            app.UseCors("AllowAll");
+            app.UseMiddleware<AuthServiceMiddleware>();
 
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerForOcelotUI(opt => {
+                app.UseSwaggerForOcelotUI(opt =>
+                {
                     opt.PathToSwaggerGenerator = "/swagger/docs";
-                }).UseOcelot().Wait();
-            }
-            using (var scope = app.Services.CreateScope())
-            {
-                //var logger = scope.ServiceProvider.GetRequiredService<IApplicationLogger<Program>>();
-
-                //try
-                //{
-                //    // TO DO: надо бы допилить сид дату, шобы в базу подгружались ТД автоматом
-                //    //KurierContextSeed.SeedAsync(builder.Configuration, scope);
-                //}
-                //catch (Exception ex)
-                //{
-                //    logger.LogError(ex, $"Error in <{nameof(Program)}>");
-                //    throw;
-                //}
+                });
             }
 
-            app.UseMiddleware<AuthServiceMiddleware>();
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
+            app.UseOcelot().Wait();
             app.MapControllers();
 
             app.Run();

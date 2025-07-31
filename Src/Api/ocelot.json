@@ -12,6 +12,9 @@
       "SwaggerKey": "orders",
       "UpstreamPathTemplate": "/api/orders/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AddHeadersToRequest": {
+        "UserToken": "{UserToken}"
+      },
       "QoSOptions": { // Circuit Breaker
         "ExceptionsAllowedBeforeBreaking": 3,
         "DurationOfBreak": 30000,
@@ -30,24 +33,9 @@
       "SwaggerKey": "delivery",
       "UpstreamPathTemplate": "/api/delivery/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "QoSOptions": {
-        "ExceptionsAllowedBeforeBreaking": 3,
-        "DurationOfBreak": 30000,
-        "TimeoutValue": 10000
-      }
-    },
-    {
-      "DownstreamPathTemplate": "/api/clients/{everything}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7059
-        }
-      ],
-      "SwaggerKey": "clients",
-      "UpstreamPathTemplate": "/api/clients/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AddHeadersToRequest": {
+        "UserToken": "{UserToken}"
+      },
       "QoSOptions": {
         "ExceptionsAllowedBeforeBreaking": 3,
         "DurationOfBreak": 30000,
@@ -66,6 +54,9 @@
       "SwaggerKey": "users",
       "UpstreamPathTemplate": "/api/users/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AddHeadersToRequest": {
+        "UserToken": "{UserToken}"
+      },
       "QoSOptions": {
         "ExceptionsAllowedBeforeBreaking": 3,
         "DurationOfBreak": 30000,
@@ -106,6 +97,6 @@
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "https://localhost:7295"
+    "BaseUrl": "http://localhost:8080"
   }
 }

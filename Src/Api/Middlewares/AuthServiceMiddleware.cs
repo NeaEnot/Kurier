@@ -19,7 +19,7 @@ namespace Kurier.Api.Middlewares
         {
             if (context.Request.Headers.TryGetValue("Authorization", out var authHeader))
             {
-                string tokenId = authHeader.ToString().Split(" ").Last();
+                Guid tokenId = Guid.Parse(authHeader.ToString().Split(" ").Last());
                 HttpClient client = httpClientFactory.CreateClient();
                 client.DefaultRequestHeaders.Add("X-Api-Key", configuration["UserValidation:Key"]);
 
@@ -36,7 +36,7 @@ namespace Kurier.Api.Middlewares
                     }
 
                     UserAuthToken token = await response.Content.ReadFromJsonAsync<UserAuthToken>();
-                    context.Items["UserToken"] = token;
+                    context.Request.Headers["UserToken"] = token.ToString();
                 }
                 catch (Exception ex)
                 {

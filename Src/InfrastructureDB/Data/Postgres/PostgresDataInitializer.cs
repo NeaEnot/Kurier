@@ -33,8 +33,9 @@ namespace InfrastructureDB.Data.Postgres
         private static SeedData GetSeedDataFromFile()
         {
             const string filename = "SeedData.json";
+            const string path = "Data/Seed";
 
-            string fileContent = File.ReadAllText($"{AppContext.BaseDirectory}/{filename}");
+            string fileContent = File.ReadAllText($"{AppContext.BaseDirectory}/{path}/{filename}");
 
             var settings = new JsonSerializerSettings()
             {

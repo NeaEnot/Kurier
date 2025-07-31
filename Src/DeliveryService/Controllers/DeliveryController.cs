@@ -82,8 +82,8 @@ namespace Kurier.DeliveryService.Controllers
 
         private UserAuthToken GetUserToken()
         {
-            HttpContext.Items.TryGetValue("UserToken", out var userAuthTokenObj);
-            UserAuthToken token = userAuthTokenObj as UserAuthToken;
+            HttpContext.Request.Headers.TryGetValue("UserToken", out var userAuthTokenObj);
+            UserAuthToken token = UserAuthToken.Parse(userAuthTokenObj.ToString());
             return token;
         }
     }

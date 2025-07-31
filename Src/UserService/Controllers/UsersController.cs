@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Kurier.Common.Attributes;
 using UserService.Attributes;
 using Kurier.Common.Models.Requests;
+using Kurier.Common.Models.Responses;
 
 namespace UserService.Controllers
 {
@@ -28,8 +29,8 @@ namespace UserService.Controllers
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
         {
-            HttpContext.Items.TryGetValue("UserToken", out var userAuthTokenObj);
-            UserAuthToken token = userAuthTokenObj != null ? userAuthTokenObj as UserAuthToken : null;
+            HttpContext.Request.Headers.TryGetValue("UserToken", out var userAuthTokenObj);
+            UserAuthToken token = UserAuthToken.Parse(userAuthTokenObj.ToString());
 
             if (request.Role == UserRole.Courier && (token == null || !token.Permissions.ContainsAll(UserPermissions.CreateCouriers)))
             {
@@ -43,7 +44,7 @@ namespace UserService.Controllers
 
             UserRegisterInStorageRequest requestInStorage = new UserRegisterInStorageRequest
             {
-                Email = request.Login,
+                Email = request.Email,
                 Password = request.Password,
                 Permissions = permissions[request.Role]
             };
@@ -55,15 +56,15 @@ namespace UserService.Controllers
         [HttpPost]
         public async Task<Guid> Auth([FromBody] UserAuthRequest request)
         {
-            Guid clientId = await _userStorage.Auth(request);
-            UserAuthToken token = await _authTokenStorage.CreateToken(clientId);
+            UserAuthResponse authResponse = await _userStorage.Auth(request);
+            UserAuthToken token = await _authTokenStorage.CreateToken(authResponse.UserId, authResponse.Permissions);
 
             return token.TokenId;
         }
 
-        [HttpGet]
+        [HttpPost]
         [TrustedKeys]
-        public async Task<UserAuthToken> GetUserInfo(Guid tokenId)
+        public async Task<UserAuthToken> GetUserInfo([FromBody] Guid tokenId)
         {
             UserAuthToken token = await _authTokenStorage.GetToken(tokenId);
             return token;
@@ -73,8 +74,8 @@ namespace UserService.Controllers
         [RequireAuthAndPermissions(UserPermissions.None)]
         public async Task<NotificationsList> GetNotifications()
         {
-            HttpContext.Items.TryGetValue("UserToken", out var userAuthTokenObj);
-            UserAuthToken token = userAuthTokenObj as UserAuthToken;
+            HttpContext.Request.Headers.TryGetValue("UserToken", out var userAuthTokenObj);
+            UserAuthToken token = UserAuthToken.Parse(userAuthTokenObj.ToString());
 
             NotificationsList notifications = await _notificationsStorage.GetNotificationsList(token.UserId);
             await _notificationsStorage.DeleteNotificationsList(token.UserId);

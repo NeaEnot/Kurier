@@ -17,11 +17,13 @@ namespace Kurier.Common.Attributes
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            if (!context.HttpContext.Items.TryGetValue("UserToken", out var userAuthTokenObj) || userAuthTokenObj is not UserAuthToken userAuthToken)
+            if (!context.HttpContext.Request.Headers.TryGetValue("UserToken", out var userAuthTokenObj))
             {
                 context.Result = new UnauthorizedResult();
                 return;
             }
+
+            UserAuthToken userAuthToken = UserAuthToken.Parse(userAuthTokenObj.ToString());
 
             if (requiredPermissions > UserPermissions.None && !userAuthToken.Permissions.ContainsAny(requiredPermissions))
             {
