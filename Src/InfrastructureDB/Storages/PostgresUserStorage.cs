@@ -1,15 +1,8 @@
-﻿using Ardalis.Specification;
-using InfrastructureDB.Specifications;
+﻿using InfrastructureDB.Specifications;
 using Kurier.Common.Interfaces;
 using Kurier.Common.Models.Entities;
 using Kurier.Common.Models.Requests;
 using Kurier.Common.Models.Responses;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace InfrastructureDB.Storages
 {
@@ -36,7 +29,7 @@ namespace InfrastructureDB.Storages
                 Id = new Guid(),
                 Password = request.Password,
                 Email = request.Email,
-                Name = request.Name,
+                Name = request.Name ?? "",
                 Permissions = request.Permissions
             });
 

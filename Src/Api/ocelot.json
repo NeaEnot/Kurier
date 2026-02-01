@@ -6,20 +6,12 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "orderservice",
-          "Port": 8020
+          "Port": 8040
         }
       ],
       "SwaggerKey": "orders",
       "UpstreamPathTemplate": "/api/orders/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "AddHeadersToRequest": {
-        "UserToken": "{UserToken}"
-      },
-      "QoSOptions": { // Circuit Breaker
-        "ExceptionsAllowedBeforeBreaking": 3,
-        "DurationOfBreak": 30000,
-        "TimeoutValue": 10000
-      }
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     },
     {
       "DownstreamPathTemplate": "/api/delivery/{everything}",
@@ -32,15 +24,7 @@
       ],
       "SwaggerKey": "delivery",
       "UpstreamPathTemplate": "/api/delivery/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "AddHeadersToRequest": {
-        "UserToken": "{UserToken}"
-      },
-      "QoSOptions": {
-        "ExceptionsAllowedBeforeBreaking": 3,
-        "DurationOfBreak": 30000,
-        "TimeoutValue": 10000
-      }
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     },
     {
       "DownstreamPathTemplate": "/api/users/{everything}",
@@ -48,20 +32,12 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "userservice",
-          "Port": 8010
+          "Port": 8050
         }
       ],
       "SwaggerKey": "users",
       "UpstreamPathTemplate": "/api/users/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "AddHeadersToRequest": {
-        "UserToken": "{UserToken}"
-      },
-      "QoSOptions": {
-        "ExceptionsAllowedBeforeBreaking": 3,
-        "DurationOfBreak": 30000,
-        "TimeoutValue": 10000
-      }
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     }
   ],
   "SwaggerEndPoints": [
@@ -71,7 +47,7 @@
         {
           "Name": "Orders API",
           "Version": "v1",
-          "Url": "http://orderservice:8020/swagger/v1/swagger.json"
+          "Url": "http://orderservice:8040/swagger/v1/swagger.json"
         }
       ]
     },
@@ -91,12 +67,10 @@
         {
           "Name": "Users API",
           "Version": "v1",
-          "Url": "http://userservice:8010/swagger/v1/swagger.json"
+          "Url": "http://userservice:8050/swagger/v1/swagger.json"
         }
       ]
     }
   ],
-  "GlobalConfiguration": {
-    "BaseUrl": "http://localhost:8080"
-  }
+  "GlobalConfiguration": {}
 }

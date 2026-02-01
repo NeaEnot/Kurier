@@ -19,4 +19,4 @@ RUN dotnet publish "OrderService.csproj" -c Release -o /app/publish /p:UseAppHos
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "OrderService.dll"]
+ENTRYPOINT ["dotnet", "Kurier.OrderService.dll"]

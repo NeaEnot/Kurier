@@ -17,4 +17,4 @@ RUN dotnet publish "UserService.csproj" -c Release -o /app/publish /p:UseAppHost
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "UserService.dll"]
+ENTRYPOINT ["dotnet", "Kurier.UserService.dll"]
